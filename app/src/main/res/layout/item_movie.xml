@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@drawable/movie_card_background"
+    android:elevation="4dp">
 
     <ImageView
         android:id="@+id/moviePoster"
         android:layout_width="150dp"
         android:layout_height="220dp"
         android:scaleType="centerCrop"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        android:clipToOutline="true"/>
 
     <TextView
         android:id="@+id/movieTitle"
@@ -19,6 +21,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
         android:textSize="16sp"
-        android:textColor="#000"
+        android:textColor="#FFFFFF"
         android:gravity="center"/>
 </LinearLayout>
