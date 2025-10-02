@@ -1,5 +1,6 @@
 package com.example.movie;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+
     private List<Movie> movieList;
 
     public MovieAdapter(List<Movie> movieList) {
@@ -40,9 +42,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         Movie movie = movieList.get(position);
-        holder.title.setText(movie.getTitle());
-        String posterUrl = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
-        Glide.with(holder.poster.getContext()).load(posterUrl).into(holder.poster);
+
+        holder.title.setText(movie.getTitle() != null ? movie.getTitle() : "No Title");
+
+        // Glide load poster only
+        if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) {
+            String posterUrl = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
+            Glide.with(holder.poster.getContext())
+                    .load(posterUrl)
+                    .into(holder.poster);
+        }
+
+        // Click listener
+        holder.itemView.setOnClickListener(v -> {
+            int movieId = movie.getId();
+            if (movieId > 0) {
+                Intent intent = new Intent(holder.itemView.getContext(), MovieDetailActivity.class);
+                intent.putExtra("MOVIE_ID", movieId);
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
