@@ -14,6 +14,13 @@ public interface TMDBApi {
             @Query("page") int page
     );
 
+    @GET("movie/upcoming")
+    Call<MovieResponse> getUpcoming(
+            @Query("api_key") String apiKey,
+            @Query("language") String language,
+            @Query("page") int page
+    );
+
     @GET("movie/{movie_id}")
     Call<Movie> getMovieDetails(
             @Path("movie_id") int movieId,
@@ -21,12 +28,17 @@ public interface TMDBApi {
             @Query("language") String language
     );
 
-
     @GET("movie/{movie_id}/watch/providers")
     Call<WatchProviderResponse> getWatchProviders(
             @Path("movie_id") int movieId,
             @Query("api_key") String apiKey
     );
 
-
+    @GET("search/movie")
+    Call<MovieResponse> searchMovies(
+            @Query("api_key") String apiKey,
+            @Query("query") String query,
+            @Query("language") String language,
+            @Query("page") int page
+    );
 }
