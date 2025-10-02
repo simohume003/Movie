@@ -20,4 +20,13 @@ public interface TMDBApi {
             @Query("api_key") String apiKey,
             @Query("language") String language
     );
+
+
+    @GET("movie/{movie_id}/watch/providers")
+    Call<WatchProviderResponse> getWatchProviders(
+            @Path("movie_id") int movieId,
+            @Query("api_key") String apiKey
+    );
+
+
 }
