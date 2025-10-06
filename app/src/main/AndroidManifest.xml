@@ -14,7 +14,7 @@
         <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"> <!-- ADD THIS LINE -->
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -22,10 +22,11 @@
         </activity>
 
         <!-- Movie Detail Activity -->
-        <activity
-            android:name=".MovieDetailActivity"
-            android:exported="false"/> <!-- No launcher intent, so false is fine -->
+        <activity android:name=".LogActivity" android:exported="true"/>
+        <activity android:name=".StatsActivity" android:exported="true"/>
+        <activity android:name=".MovieDetailActivity" android:exported="true"/>
 
     </application>
+
 
 </manifest>

@@ -4,31 +4,40 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private List<Movie> movieList;
+    private FirebaseFirestore db;
 
     public MovieAdapter(List<Movie> movieList) {
         this.movieList = movieList;
+        db = FirebaseFirestore.getInstance();
     }
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         ImageView poster;
+        Button btnMarkWatched;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.movieTitle);
             poster = itemView.findViewById(R.id.moviePoster);
+            btnMarkWatched = itemView.findViewById(R.id.btnMarkWatched);
         }
     }
 
@@ -45,7 +54,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         holder.title.setText(movie.getTitle() != null ? movie.getTitle() : "No Title");
 
-        // Glide load poster only
         if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) {
             String posterUrl = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
             Glide.with(holder.poster.getContext())
@@ -53,13 +61,34 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                     .into(holder.poster);
         }
 
-        // Click listener
+        // Click entire item -> open detail page
         holder.itemView.setOnClickListener(v -> {
-            int movieId = movie.getId();
-            if (movieId > 0) {
+            if (movie.getId() > 0 && movie.getTitle() != null) {
                 Intent intent = new Intent(holder.itemView.getContext(), MovieDetailActivity.class);
-                intent.putExtra("MOVIE_ID", movieId);
+                intent.putExtra("MOVIE_ID", movie.getId());
+                intent.putExtra("MOVIE_TITLE", movie.getTitle());
                 holder.itemView.getContext().startActivity(intent);
+            }
+        });
+
+        // Button click: mark as watched
+        holder.btnMarkWatched.setOnClickListener(v -> {
+            if (movie.getTitle() != null) {
+                Map<String, Object> watchedMovie = new HashMap<>();
+                watchedMovie.put("title", movie.getTitle());
+                watchedMovie.put("note", "Marked as watched");
+                watchedMovie.put("timestamp", System.currentTimeMillis());
+
+                db.collection("watchedMovies")
+                        .add(watchedMovie)
+                        .addOnSuccessListener(docRef ->
+                                Toast.makeText(holder.itemView.getContext(),
+                                        movie.getTitle() + " marked as watched!", Toast.LENGTH_SHORT).show()
+                        )
+                        .addOnFailureListener(e ->
+                                Toast.makeText(holder.itemView.getContext(),
+                                        "Failed to mark as watched", Toast.LENGTH_SHORT).show()
+                        );
             }
         });
     }

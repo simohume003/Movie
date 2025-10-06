@@ -11,16 +11,15 @@ public class Movie {
     private String posterPath;
 
     private String overview;
-    private int runtime;
-
+    private Integer runtime;           // nullable
     @SerializedName("vote_average")
-    private float voteAverage;
+    private Float voteAverage;         // nullable
 
     // Getters
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getPosterPath() { return posterPath; }
     public String getOverview() { return overview; }
-    public int getRuntime() { return runtime; }
-    public float getVoteAverage() { return voteAverage; }
+    public Integer getRuntime() { return runtime; }
+    public Float getVoteAverage() { return voteAverage; }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="#1E1E1E"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp">
+
+    <TextView
+        android:id="@+id/logTitleText"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Movie Title"/>
+
+    <TextView
+        android:id="@+id/logNoteText"
+        android:textColor="#CCCCCC"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Note"/>
+</LinearLayout>

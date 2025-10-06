@@ -8,6 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -15,8 +21,8 @@ import retrofit2.Response;
 public class MovieDetailActivity extends AppCompatActivity {
 
     private ImageView poster;
-    private TextView title, overview, runtime, rating, streaming;
-    private static final String API_KEY = "929a54210220df3134196d46a16375b1";
+    private TextView title, overview, runtime, rating, streaming, cexPrice;
+    private static final String TMDB_API_KEY = "929a54210220df3134196d46a16375b1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +35,23 @@ public class MovieDetailActivity extends AppCompatActivity {
         runtime = findViewById(R.id.detailRuntime);
         rating = findViewById(R.id.detailRating);
         streaming = findViewById(R.id.detailStreaming);
+        cexPrice = findViewById(R.id.detailCexPrice);
 
         int movieId = getIntent().getIntExtra("MOVIE_ID", 0);
+        String movieTitle = getIntent().getStringExtra("MOVIE_TITLE");
 
-        if (movieId > 0) {
+        if (movieId > 0 && movieTitle != null) {
             fetchMovieDetails(movieId);
             fetchWatchProviders(movieId);
+            fetchCexPrice(movieTitle);
         } else {
             title.setText("No Movie Selected");
-            streaming.setText("");
         }
     }
 
     private void fetchMovieDetails(int movieId) {
         RetrofitClient.getInstance()
-                .getMovieDetails(movieId, API_KEY, "en-US")
+                .getMovieDetails(movieId, TMDB_API_KEY, "en-US")
                 .enqueue(new Callback<Movie>() {
                     @Override
                     public void onResponse(Call<Movie> call, Response<Movie> response) {
@@ -51,11 +59,11 @@ public class MovieDetailActivity extends AppCompatActivity {
                             Movie movie = response.body();
 
                             title.setText(movie.getTitle() != null ? movie.getTitle() : "No Title");
-                            overview.setText(movie.getOverview() != null ? movie.getOverview() : "No overview available");
+                            overview.setText(movie.getOverview() != null ? movie.getOverview() : "No overview");
                             runtime.setText("Runtime: " + (movie.getRuntime() > 0 ? movie.getRuntime() + " min" : "N/A"));
                             rating.setText("Rating: " + movie.getVoteAverage());
 
-                            if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) {
+                            if (movie.getPosterPath() != null) {
                                 String posterUrl = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
                                 Glide.with(poster.getContext())
                                         .load(posterUrl)
@@ -75,26 +83,43 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void fetchWatchProviders(int movieId) {
         RetrofitClient.getInstance()
-                .getWatchProviders(movieId, API_KEY)
+                .getWatchProviders(movieId, TMDB_API_KEY)
                 .enqueue(new Callback<WatchProviderResponse>() {
                     @Override
                     public void onResponse(Call<WatchProviderResponse> call, Response<WatchProviderResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            WatchProviderResponse.CountryProviders providersIE = response.body().getResults().get("IE"); // Ireland
-                            WatchProviderResponse.CountryProviders providersUS = response.body().getResults().get("US"); // US
+                            WatchProviderResponse wpResponse = response.body();
+                            WatchProviderResponse.CountryProviders providers = null;
 
-                            StringBuilder sb = new StringBuilder();
-                            if (providersIE != null && providersIE.getFlatrate() != null) {
-                                for (WatchProviderResponse.Provider p : providersIE.getFlatrate()) {
-                                    sb.append(p.getProviderName()).append(" ");
+                            // 1. Ireland
+                            providers = wpResponse.getResults().get("IE");
+
+                            // 2. US fallback
+                            if (providers == null || providers.getFlatrate() == null) {
+                                providers = wpResponse.getResults().get("US");
+                            }
+
+                            // 3. Any other region
+                            if (providers == null || providers.getFlatrate() == null) {
+                                for (String region : wpResponse.getResults().keySet()) {
+                                    WatchProviderResponse.CountryProviders temp = wpResponse.getResults().get(region);
+                                    if (temp != null && temp.getFlatrate() != null) {
+                                        providers = temp;
+                                        break;
+                                    }
                                 }
-                                streaming.setText("Available in Ireland: " + sb.toString().trim());
-                            } else if (providersUS != null && providersUS.getFlatrate() != null) {
-                                sb.setLength(0);
-                                for (WatchProviderResponse.Provider p : providersUS.getFlatrate()) {
-                                    sb.append(p.getProviderName()).append(" ");
+                            }
+
+                            if (providers != null && providers.getFlatrate() != null) {
+                                StringBuilder sb = new StringBuilder();
+                                for (WatchProviderResponse.Provider p : providers.getFlatrate()) {
+                                    sb.append(p.getProviderName()).append(", ");
                                 }
-                                streaming.setText("Available in US: " + sb.toString().trim());
+                                String providerText = sb.toString();
+                                if (providerText.endsWith(", ")) {
+                                    providerText = providerText.substring(0, providerText.length() - 2);
+                                }
+                                streaming.setText("Available on: " + providerText);
                             } else {
                                 streaming.setText("Not available on streaming platforms");
                             }
@@ -108,5 +133,34 @@ public class MovieDetailActivity extends AppCompatActivity {
                         streaming.setText("Streaming info not available");
                     }
                 });
+    }
+
+    private void fetchCexPrice(String movieTitle) {
+        new Thread(() -> {
+            try {
+                // Replace spaces with '+'
+                String searchQuery = movieTitle.replace(" ", "+") + "+DVD";
+                Document doc = Jsoup.connect("https://uk.webuy.com/search?search=" + searchQuery)
+                        .get();
+
+                Element priceElement = null;
+
+                // Loop over all products to find exact title match
+                for (Element product : doc.select(".product-title")) {
+                    String text = product.text().toLowerCase();
+                    if (text.contains(movieTitle.toLowerCase())) {
+                        priceElement = product.parent().selectFirst(".product-price");
+                        break;
+                    }
+                }
+
+                String priceText = priceElement != null ? priceElement.text() : "Nothing found";
+
+                runOnUiThread(() -> cexPrice.setText("CEX Price: " + priceText));
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> cexPrice.setText("CEX Price: Nothing found"));
+            }
+        }).start();
     }
 }

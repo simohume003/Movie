@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/logTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Watched Movies"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewLogs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

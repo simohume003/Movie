@@ -23,4 +23,11 @@
         android:textSize="16sp"
         android:textColor="#FFFFFF"
         android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btnMarkWatched"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mark as Watched"
+        android:layout_marginTop="4dp"/>
 </LinearLayout>

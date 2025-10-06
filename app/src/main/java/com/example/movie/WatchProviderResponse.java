@@ -1,32 +1,23 @@
 package com.example.movie;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
 import java.util.Map;
 
 public class WatchProviderResponse {
 
-    @SerializedName("results")
     private Map<String, CountryProviders> results;
 
-    public Map<String, CountryProviders> getResults() {
-        return results;
-    }
+    public Map<String, CountryProviders> getResults() { return results; }
 
     public static class CountryProviders {
-        @SerializedName("flatrate")
-        private Provider[] flatrate;
+        private List<Provider> flatrate;
 
-        public Provider[] getFlatrate() {
-            return flatrate;
-        }
+        public List<Provider> getFlatrate() { return flatrate; }
     }
 
     public static class Provider {
-        @SerializedName("provider_name")
-        private String providerName;
+        private String provider_name;
 
-        public String getProviderName() {
-            return providerName;
-        }
+        public String getProviderName() { return provider_name; }
     }
 }

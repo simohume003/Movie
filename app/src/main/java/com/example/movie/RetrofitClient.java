@@ -7,15 +7,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     private static RetrofitClient instance = null;
-    private TMDBApi api;
+    private TMDBApi tmdbApi;
+    private CexApi cexApi;
 
     private RetrofitClient() {
-        Retrofit retrofit = new Retrofit.Builder()
+        Retrofit tmdbRetrofit = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/3/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        tmdbApi = tmdbRetrofit.create(TMDBApi.class);
 
-        api = retrofit.create(TMDBApi.class);
+        Retrofit cexRetrofit = new Retrofit.Builder()
+                .baseUrl("https://uk.webuy.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        cexApi = cexRetrofit.create(CexApi.class);
     }
 
     public static RetrofitClient getInstance() {
@@ -25,23 +31,29 @@ public class RetrofitClient {
         return instance;
     }
 
+    // TMDB Calls
     public Call<MovieResponse> getNowPlaying(String apiKey, String language, int page) {
-        return api.getNowPlaying(apiKey, language, page);
+        return tmdbApi.getNowPlaying(apiKey, language, page);
     }
 
     public Call<MovieResponse> getUpcoming(String apiKey, String language, int page) {
-        return api.getUpcoming(apiKey, language, page);
+        return tmdbApi.getUpcoming(apiKey, language, page);
     }
 
     public Call<Movie> getMovieDetails(int movieId, String apiKey, String language) {
-        return api.getMovieDetails(movieId, apiKey, language);
+        return tmdbApi.getMovieDetails(movieId, apiKey, language);
     }
 
     public Call<WatchProviderResponse> getWatchProviders(int movieId, String apiKey) {
-        return api.getWatchProviders(movieId, apiKey);
+        return tmdbApi.getWatchProviders(movieId, apiKey);
     }
 
     public Call<MovieResponse> searchMovies(String apiKey, String query, String language, int page) {
-        return api.searchMovies(apiKey, query, language, page);
+        return tmdbApi.searchMovies(apiKey, query, language, page);
+    }
+
+    // CeX Call
+    public Call<CexResponse> searchCexProduct(String query) {
+        return cexApi.searchProduct(query);
     }
 }

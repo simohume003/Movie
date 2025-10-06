@@ -1,5 +1,6 @@
 package com.example.movie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -7,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -27,15 +30,21 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerViewMovies);
         searchView = findViewById(R.id.searchView);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         // Grid layout: 2 movies per row
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
 
+        // Fetch movies
         fetchNowPlayingMovies();
-        fetchUpcomingMovies(); // optional logging for now
+        fetchUpcomingMovies(); // optional logging
 
+        // Setup search
         setupSearch();
+
+        // Setup bottom navigation
+        setupBottomNavigation(bottomNavigationView);
     }
 
     private void fetchNowPlayingMovies() {
@@ -91,8 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Optional: live search while typing
-                return false;
+                return false; // optional: live search
             }
         });
     }
@@ -117,5 +125,22 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("API_ERROR", "Search failure: " + t.getMessage());
                     }
                 });
+    }
+
+    private void setupBottomNavigation(BottomNavigationView bottomNavigationView) {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                recyclerView.scrollToPosition(0); // Already on home
+                return true;
+            } else if (id == R.id.nav_log) {
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
+            } else if (id == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 }
