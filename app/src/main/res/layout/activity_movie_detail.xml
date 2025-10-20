@@ -13,9 +13,9 @@
         <ImageView
             android:id="@+id/detailPoster"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Movie Poster"/>
+            android:layout_height="474dp"
+            android:contentDescription="Movie Poster"
+            android:scaleType="centerCrop" />
 
         <!-- Title -->
         <TextView
