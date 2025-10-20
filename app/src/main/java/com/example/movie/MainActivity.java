@@ -3,10 +3,12 @@ package com.example.movie;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,7 +21,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewNowPlaying;
+    private RecyclerView recyclerViewUpcoming;
+    private RecyclerView recyclerViewSearchResults;
     private SearchView searchView;
     private static final String API_KEY = "929a54210220df3134196d46a16375b1";
 
@@ -28,22 +32,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recyclerViewMovies);
+        recyclerViewNowPlaying = findViewById(R.id.recyclerViewNowPlaying);
+        recyclerViewUpcoming = findViewById(R.id.recyclerViewUpcoming);
+        recyclerViewSearchResults = findViewById(R.id.recyclerViewSearchResults);
         searchView = findViewById(R.id.searchView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Grid layout: 2 movies per row
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerViewNowPlaying.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        recyclerViewUpcoming.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerViewSearchResults.setVisibility(View.GONE);
 
-        // Fetch movies
         fetchNowPlayingMovies();
-        fetchUpcomingMovies(); // optional logging
-
-        // Setup search
+        fetchUpcomingMovies();
         setupSearch();
-
-        // Setup bottom navigation
         setupBottomNavigation(bottomNavigationView);
     }
 
@@ -55,10 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Movie> movies = response.body().getResults();
-                            recyclerView.setAdapter(new MovieAdapter(movies));
-                            Log.d("API_DEBUG", "Now Playing: " + movies.size() + " movies");
-                        } else {
-                            Log.e("API_ERROR", "Now Playing error: " + response.code());
+                            recyclerViewNowPlaying.setAdapter(new MovieAdapter(movies, true));
                         }
                     }
 
@@ -76,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            List<Movie> upcomingMovies = response.body().getResults();
-                            Log.d("API_DEBUG", "Upcoming: " + upcomingMovies.size() + " movies");
+                            List<Movie> movies = response.body().getResults();
+                            recyclerViewUpcoming.setAdapter(new MovieAdapter(movies, true));
                         }
                     }
 
@@ -93,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (!query.isEmpty()) {
+                    recyclerViewNowPlaying.setVisibility(View.GONE);
+                    recyclerViewUpcoming.setVisibility(View.GONE);
+                    recyclerViewSearchResults.setVisibility(View.VISIBLE);
                     searchMovies(query);
                 }
                 return true;
@@ -100,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false; // optional: live search
+                return false;
             }
         });
     }
@@ -113,10 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Movie> movies = response.body().getResults();
-                            recyclerView.setAdapter(new MovieAdapter(movies));
-                            Log.d("API_DEBUG", "Search results: " + movies.size() + " movies for query: " + query);
-                        } else {
-                            Log.e("API_ERROR", "Search error: " + response.code());
+                            recyclerViewSearchResults.setAdapter(new MovieAdapter(movies, false));
                         }
                     }
 
@@ -131,7 +134,13 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                recyclerView.scrollToPosition(0); // Already on home
+                recyclerViewSearchResults.setVisibility(View.GONE);
+                recyclerViewNowPlaying.setVisibility(View.VISIBLE);
+                recyclerViewUpcoming.setVisibility(View.VISIBLE);
+                recyclerViewNowPlaying.scrollToPosition(0);
+                recyclerViewUpcoming.scrollToPosition(0);
+                searchView.setQuery("", false);
+                searchView.clearFocus();
                 return true;
             } else if (id == R.id.nav_log) {
                 startActivity(new Intent(this, LogActivity.class));

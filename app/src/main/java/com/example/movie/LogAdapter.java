@@ -38,7 +38,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.LogViewHolder> {
     public void onBindViewHolder(LogViewHolder holder, int position) {
         LogActivity.MovieLog log = logList.get(position);
         holder.title.setText(log.title);
-        holder.note.setText(log.note);
+
     }
 
     @Override

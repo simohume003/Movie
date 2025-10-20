@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class LogActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
+    private FirebaseUser currentUser;
     private RecyclerView recyclerView;
     private List<MovieLog> logList = new ArrayList<>();
     private LogAdapter adapter;
@@ -31,9 +34,19 @@ public class LogActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Load watched movies
-        db.collection("watchedMovies")
+        if (currentUser != null) {
+            loadUserLogs();
+        } else {
+            Log.e("FIREBASE", "No logged-in user found");
+        }
+    }
+
+    private void loadUserLogs() {
+        db.collection("users")
+                .document(currentUser.getUid())
+                .collection("watchedMovies")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     logList.clear();
@@ -43,14 +56,12 @@ public class LogActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e ->
-                        Log.e("FIREBASE", "Error loading logs", e)
-                );
+                .addOnFailureListener(e -> Log.e("FIREBASE", "Error loading user logs", e));
     }
 
+    // MovieLog class
     public static class MovieLog {
         public String title;
-        public String note;
         public long timestamp;
 
         public MovieLog() {} // empty constructor required by Firestore

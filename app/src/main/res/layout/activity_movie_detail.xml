@@ -1,87 +1,86 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
-    android:padding="16dp">
+    android:background="#FFFFFF">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Poster with glassmorphic background -->
-        <FrameLayout
-            android:layout_width="200dp"
+        <!-- Poster -->
+        <ImageView
+            android:id="@+id/detailPoster"
+            android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/glass_background"
-            android:padding="4dp">
+            android:scaleType="centerCrop"
+            android:contentDescription="Movie Poster"/>
 
-            <ImageView
-                android:id="@+id/detailPoster"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"/>
-        </FrameLayout>
-
-        <!-- Movie Title -->
+        <!-- Title -->
         <TextView
             android:id="@+id/detailTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Movie Title"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:paddingTop="12dp"
-            android:gravity="center"/>
+            android:layout_marginTop="12dp"/>
 
-        <!-- Movie Overview -->
+        <!-- Overview -->
         <TextView
             android:id="@+id/detailOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:paddingTop="8dp"
+            android:text="Overview"
             android:textSize="16sp"
-            android:lineSpacingExtra="4dp"/>
+            android:layout_marginTop="8dp"/>
 
-        <!-- Runtime -->
+        <!-- Runtime & Rating -->
         <TextView
             android:id="@+id/detailRuntime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:paddingTop="8dp"
-            android:textSize="16sp"/>
+            android:text="Runtime: "
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"/>
 
-        <!-- Rating -->
         <TextView
             android:id="@+id/detailRating"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:paddingTop="8dp"
-            android:textSize="16sp"/>
+            android:text="Rating: "
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
 
-        <!-- Streaming Info -->
+        <!-- Streaming Providers -->
         <TextView
             android:id="@+id/detailStreaming"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#1a73e8"
-            android:paddingTop="8dp"
-            android:textSize="16sp"/>
+            android:text="Available on: "
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"/>
 
-        <!-- CeX Price -->
+        <!-- CEX Price -->
         <TextView
             android:id="@+id/detailCexPrice"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:text="CEX Price: "
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Mark as Watched Button -->
+        <Button
+            android:id="@+id/btnMarkWatched"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mark as Watched"
+            android:layout_marginTop="16dp"
             android:textSize="16sp"
-            android:textColor="#1a73e8"/>
+            android:backgroundTint="#FF5722"
+            android:textColor="#FFFFFF"/>
+
     </LinearLayout>
 </ScrollView>
