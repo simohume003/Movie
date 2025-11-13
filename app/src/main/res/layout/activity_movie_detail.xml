@@ -1,86 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#0D0D0D">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Poster -->
-        <ImageView
-            android:id="@+id/detailPoster"
+        <!-- HERO BACKDROP SECTION -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="474dp"
-            android:contentDescription="Movie Poster"
-            android:scaleType="centerCrop" />
+            android:layout_height="350dp">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/detailTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Movie Title"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp"/>
+            <ImageView
+                android:id="@+id/detailPoster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Movie Poster" />
 
-        <!-- Overview -->
-        <TextView
-            android:id="@+id/detailOverview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Overview"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"/>
+            <!-- Gradient Overlay -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/detail_poster_gradient" />
+        </FrameLayout>
 
-        <!-- Runtime & Rating -->
-        <TextView
-            android:id="@+id/detailRuntime"
+
+        <!-- FLOATING MOVIE INFO CARD -->
+        <LinearLayout
+            android:id="@+id/infoCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Runtime: "
-            android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
+            android:orientation="vertical"
+            android:background="@drawable/rounded_dark_card"
+            android:elevation="10dp"
+            android:padding="20dp"
+            android:layout_marginTop="-120dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="20dp">
 
-        <TextView
-            android:id="@+id/detailRating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Rating: "
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            <!-- TITLE -->
+            <TextView
+                android:id="@+id/detailTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Movie Title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="6dp" />
 
-        <!-- Streaming Providers -->
-        <TextView
-            android:id="@+id/detailStreaming"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Available on: "
-            android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
+            <!-- RUNTIME + RATING -->
+            <TextView
+                android:id="@+id/detailRuntime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Runtime: 100 min"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp" />
 
-        <!-- CEX Price -->
-        <TextView
-            android:id="@+id/detailCexPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CEX Price: "
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/detailRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rating: 7.8"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:layout_marginTop="2dp" />
 
-        <!-- Mark as Watched Button -->
-        <Button
-            android:id="@+id/btnMarkWatched"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mark as Watched"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            android:backgroundTint="#FF5722"
-            android:textColor="#FFFFFF"/>
+            <!-- OVERVIEW -->
+            <TextView
+                android:id="@+id/detailOverview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Overview text here..."
+                android:textColor="#DDDDDD"
+                android:textSize="15sp"
+                android:layout_marginTop="12dp" />
+
+            <!-- STREAMING -->
+            <TextView
+                android:id="@+id/detailStreaming"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Available on: Netflix"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp" />
+
+            <!-- CEX PRICE -->
+            <TextView
+                android:id="@+id/detailCexPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CEX Price: €."
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+
+            <!-- SPOTIFY SECTION -->
+            <TextView
+                android:id="@+id/spotifyHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Soundtrack (Spotify)"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp" />
+
+            <LinearLayout
+                android:id="@+id/spotifyContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+
+                <ImageView
+                    android:id="@+id/spotifyAlbumArt"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Spotify Album Art" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="12dp">
+
+                    <TextView
+                        android:id="@+id/spotifyAlbumTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:text="Spotify Track"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/spotifyArtistName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#AAAAAA"
+                        android:text="Artist"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnOpenSpotify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Play on Spotify"
+                android:backgroundTint="#1DB954"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="10dp" />
+
+
+            <!-- WATCHED BUTTON -->
+            <Button
+                android:id="@+id/btnMarkWatched"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mark as Watched"
+                android:backgroundTint="#FF5722"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

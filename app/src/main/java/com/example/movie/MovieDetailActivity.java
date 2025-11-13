@@ -1,5 +1,7 @@
 package com.example.movie;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,11 +31,20 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private ImageView poster;
     private TextView title, overview, runtime, rating, streaming, cexPrice;
+
+    // Spotify UI
+    private ImageView spotifyAlbumArt;
+    private TextView spotifyAlbumTitle;
+    private Button btnOpenSpotify;
+
     private Button btnMarkWatched;
 
     private static final String TMDB_API_KEY = "929a54210220df3134196d46a16375b1";
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+
+    // store Spotify album URL so we can open it
+    private String spotifyAlbumUrl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,11 @@ public class MovieDetailActivity extends AppCompatActivity {
         cexPrice = findViewById(R.id.detailCexPrice);
         btnMarkWatched = findViewById(R.id.btnMarkWatched);
 
+        // Spotify UI
+        spotifyAlbumArt = findViewById(R.id.spotifyAlbumArt);
+        spotifyAlbumTitle = findViewById(R.id.spotifyAlbumTitle);
+        btnOpenSpotify = findViewById(R.id.btnOpenSpotify);
+
         // Firebase
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -63,10 +79,24 @@ public class MovieDetailActivity extends AppCompatActivity {
             fetchWatchProviders(movieId);
             fetchCexPrice(movieTitle);
 
+            // mark as watched
             btnMarkWatched.setOnClickListener(v -> markMovieAsWatched(movieTitle));
+
+            // 🔊 search for Spotify soundtrack
+            searchSpotifySoundtrack(movieTitle);
         } else {
             title.setText("No Movie Selected");
         }
+
+        // open in Spotify button
+        btnOpenSpotify.setOnClickListener(v -> {
+            if (spotifyAlbumUrl != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(spotifyAlbumUrl));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No Spotify album found", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void fetchMovieDetails(int movieId) {
@@ -116,7 +146,8 @@ public class MovieDetailActivity extends AppCompatActivity {
                                     sb.append(p.getProviderName()).append(", ");
                                 }
                                 String providerText = sb.toString();
-                                if (providerText.endsWith(", ")) providerText = providerText.substring(0, providerText.length() - 2);
+                                if (providerText.endsWith(", "))
+                                    providerText = providerText.substring(0, providerText.length() - 2);
                                 streaming.setText("Available on: " + providerText);
                             } else {
                                 streaming.setText("Not available on streaming platforms");
@@ -172,5 +203,65 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .add(watchedMovie)
                 .addOnSuccessListener(docRef -> Toast.makeText(this, movieTitle + " marked as watched!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to mark as watched", Toast.LENGTH_SHORT).show());
+    }
+
+    // 🔊 SPOTIFY SEARCH
+
+    private void searchSpotifySoundtrack(String movieTitle) {
+        // Nice heuristic: movie title + "original motion picture soundtrack"
+        String query = movieTitle + " original motion picture soundtrack";
+
+        SpotifyAuth.fetchAccessToken(new SpotifyAuth.TokenCallback() {
+            @Override
+            public void onTokenReceived(String token) {
+                SpotifyClient.getApi()
+                        .searchAlbums("Bearer " + token, query, "album", 1)
+                        .enqueue(new Callback<SpotifySearchResponse>() {
+                            @Override
+                            public void onResponse(Call<SpotifySearchResponse> call, Response<SpotifySearchResponse> response) {
+                                if (response.isSuccessful() && response.body() != null &&
+                                        response.body().getAlbums() != null &&
+                                        response.body().getAlbums().getItems() != null &&
+                                        !response.body().getAlbums().getItems().isEmpty()) {
+
+                                    SpotifyAlbum album = response.body().getAlbums().getItems().get(0);
+                                    spotifyAlbumTitle.setText(album.getName());
+
+                                    // get first image if available
+                                    if (album.getImages() != null && !album.getImages().isEmpty()) {
+                                        String imgUrl = album.getImages().get(0).getUrl();
+                                        Glide.with(MovieDetailActivity.this)
+                                                .load(imgUrl)
+                                                .into(spotifyAlbumArt);
+                                    }
+
+                                    if (album.getExternal_urls() != null &&
+                                            album.getExternal_urls().getSpotify() != null) {
+                                        spotifyAlbumUrl = album.getExternal_urls().getSpotify();
+                                        btnOpenSpotify.setVisibility(Button.VISIBLE);
+                                    } else {
+                                        btnOpenSpotify.setVisibility(Button.GONE);
+                                    }
+                                } else {
+                                    spotifyAlbumTitle.setText("No soundtrack found on Spotify");
+                                    btnOpenSpotify.setVisibility(Button.GONE);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<SpotifySearchResponse> call, Throwable t) {
+                                spotifyAlbumTitle.setText("Spotify search failed");
+                                btnOpenSpotify.setVisibility(Button.GONE);
+                            }
+                        });
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                runOnUiThread(() ->
+                        spotifyAlbumTitle.setText("Spotify auth failed")
+                );
+            }
+        });
     }
 }
