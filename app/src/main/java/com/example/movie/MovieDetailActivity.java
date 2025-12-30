@@ -31,6 +31,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private ImageView poster;
     private TextView title, overview, runtime, rating, streaming, cexPrice;
+    private int currentRuntime = 0;
+    private String currentGenre = "Unknown";
 
     // Spotify UI
     private ImageView spotifyAlbumArt;
@@ -80,7 +82,9 @@ public class MovieDetailActivity extends AppCompatActivity {
             fetchCexPrice(movieTitle);
 
             // mark as watched
-            btnMarkWatched.setOnClickListener(v -> markMovieAsWatched(movieTitle));
+            btnMarkWatched.setOnClickListener(v ->
+                    markMovieAsWatched(movieTitle, currentRuntime, currentGenre));
+
 
             // 🔊 search for Spotify soundtrack
             searchSpotifySoundtrack(movieTitle);
@@ -107,6 +111,13 @@ public class MovieDetailActivity extends AppCompatActivity {
                     public void onResponse(Call<Movie> call, Response<Movie> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             Movie movie = response.body();
+
+                            // Save locally for later
+                            currentRuntime = movie.getRuntime();
+                            if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
+                                currentGenre = movie.getGenres().get(0).getName();
+                            }
+
                             title.setText(movie.getTitle() != null ? movie.getTitle() : "No Title");
                             overview.setText(movie.getOverview() != null ? movie.getOverview() : "No overview");
                             runtime.setText("Runtime: " + (movie.getRuntime() > 0 ? movie.getRuntime() + " min" : "N/A"));
@@ -129,6 +140,8 @@ public class MovieDetailActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     private void fetchWatchProviders(int movieId) {
         RetrofitClient.getInstance()
@@ -187,23 +200,43 @@ public class MovieDetailActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void markMovieAsWatched(String movieTitle) {
+    private void markMovieAsWatched(String movieTitle, int runtime, String genre) {
         if (currentUser == null) {
             Toast.makeText(this, "Please log in to mark movies", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Map<String, Object> watchedMovie = new HashMap<>();
-        watchedMovie.put("title", movieTitle);
-        watchedMovie.put("timestamp", System.currentTimeMillis());
+        // Step 1 — show dialog to pick streaming service
+        String[] services = {"Netflix", "Prime Video", "Disney+", "Apple TV", "Other"};
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Where did you watch it?")
+                .setItems(services, (dialog, which) -> {
+                    String selectedService = services[which];
 
-        db.collection("users")
-                .document(currentUser.getUid())
-                .collection("watchedMovies")
-                .add(watchedMovie)
-                .addOnSuccessListener(docRef -> Toast.makeText(this, movieTitle + " marked as watched!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Failed to mark as watched", Toast.LENGTH_SHORT).show());
+                    // Step 2 — build Firestore object
+                    Map<String, Object> watchedMovie = new HashMap<>();
+                    watchedMovie.put("title", movieTitle);
+                    watchedMovie.put("genre", genre != null ? genre : "Unknown");
+                    watchedMovie.put("runtime", runtime > 0 ? runtime : 0);
+                    watchedMovie.put("service", selectedService);
+                    watchedMovie.put("timestamp", System.currentTimeMillis());
+
+                    // Step 3 — write to Firestore
+                    db.collection("users")
+                            .document(currentUser.getUid())
+                            .collection("watchedMovies")
+                            .add(watchedMovie)
+                            .addOnSuccessListener(docRef ->
+                                    Toast.makeText(this,
+                                            movieTitle + " marked as watched on " + selectedService + "!",
+                                            Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to mark as watched", Toast.LENGTH_SHORT).show());
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
+
 
     // 🔊 SPOTIFY SEARCH
 

@@ -9,7 +9,7 @@
         android:id="@+id/logTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Watched Movies"
+        android:text="Watched Movies List"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:layout_gravity="center_horizontal"
