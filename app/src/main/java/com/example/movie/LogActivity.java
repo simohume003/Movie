@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,9 +19,10 @@ public class LogActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+
     private RecyclerView recyclerView;
-    private List<MovieLog> logList = new ArrayList<>();
     private LogAdapter adapter;
+    private final List<MovieLog> logList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,8 @@ public class LogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_log);
 
         recyclerView = findViewById(R.id.recyclerViewLogs);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
         adapter = new LogAdapter(logList);
         recyclerView.setAdapter(adapter);
 
@@ -39,7 +41,7 @@ public class LogActivity extends AppCompatActivity {
         if (currentUser != null) {
             loadUserLogs();
         } else {
-            Log.e("FIREBASE", "No logged-in user found");
+            Log.e("LOG", "No logged-in user");
         }
     }
 
@@ -48,22 +50,25 @@ public class LogActivity extends AppCompatActivity {
                 .document(currentUser.getUid())
                 .collection("watchedMovies")
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+                .addOnSuccessListener(snapshot -> {
                     logList.clear();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    for (QueryDocumentSnapshot doc : snapshot) {
                         MovieLog log = doc.toObject(MovieLog.class);
                         logList.add(log);
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Log.e("FIREBASE", "Error loading user logs", e));
+                .addOnFailureListener(e ->
+                        Log.e("LOG", "Failed to load logs", e));
     }
 
-    // MovieLog class
+
     public static class MovieLog {
         public String title;
+        public float rating;
+        public String service;
         public long timestamp;
 
-        public MovieLog() {} // empty constructor required by Firestore
+        public MovieLog() {} // required by Firestore
     }
 }
