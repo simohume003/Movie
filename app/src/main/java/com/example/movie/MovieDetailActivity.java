@@ -26,6 +26,13 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import androidx.appcompat.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.RatingBar;
+
+
+
 
 public class MovieDetailActivity extends AppCompatActivity {
 
@@ -68,25 +75,25 @@ public class MovieDetailActivity extends AppCompatActivity {
         spotifyAlbumTitle = findViewById(R.id.spotifyAlbumTitle);
         btnOpenSpotify = findViewById(R.id.btnOpenSpotify);
 
-        // Firebase
+
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Get intent extras
+
         int movieId = getIntent().getIntExtra("MOVIE_ID", 0);
         String movieTitle = getIntent().getStringExtra("MOVIE_TITLE");
 
         if (movieId > 0 && movieTitle != null) {
             fetchMovieDetails(movieId);
             fetchWatchProviders(movieId);
-            fetchCexPrice(movieTitle);
 
-            // mark as watched
+
+
             btnMarkWatched.setOnClickListener(v ->
                     markMovieAsWatched(movieTitle, currentRuntime, currentGenre));
 
 
-            // 🔊 search for Spotify soundtrack
+
             searchSpotifySoundtrack(movieTitle);
         } else {
             title.setText("No Movie Selected");
@@ -177,68 +184,70 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void fetchCexPrice(String movieTitle) {
-        new Thread(() -> {
-            try {
-                String searchQuery = movieTitle.replace(" ", "+") + "+DVD";
-                Document doc = Jsoup.connect("https://uk.webuy.com/search?search=" + searchQuery).get();
-                Element priceElement = null;
-
-                for (Element product : doc.select(".product-title")) {
-                    if (product.text().equalsIgnoreCase(movieTitle)) {
-                        priceElement = product.parent().selectFirst(".product-price");
-                        break;
-                    }
-                }
-
-                final String priceText = priceElement != null ? priceElement.text() : "Nothing found";
-                runOnUiThread(() -> cexPrice.setText("CEX Price: " + priceText));
-            } catch (IOException e) {
-                e.printStackTrace();
-                runOnUiThread(() -> cexPrice.setText("CEX Price: Nothing found"));
-            }
-        }).start();
-    }
+  //ebay
 
     private void markMovieAsWatched(String movieTitle, int runtime, String genre) {
+
         if (currentUser == null) {
             Toast.makeText(this, "Please log in to mark movies", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Step 1 — show dialog to pick streaming service
+        // STEP 1 — pick streaming service
         String[] services = {"Netflix", "Prime Video", "Disney+", "Apple TV", "Other"};
-        new android.app.AlertDialog.Builder(this)
+
+        new AlertDialog.Builder(this)
                 .setTitle("Where did you watch it?")
                 .setItems(services, (dialog, which) -> {
+
                     String selectedService = services[which];
 
-                    // Step 2 — build Firestore object
-                    Map<String, Object> watchedMovie = new HashMap<>();
-                    watchedMovie.put("title", movieTitle);
-                    watchedMovie.put("genre", genre != null ? genre : "Unknown");
-                    watchedMovie.put("runtime", runtime > 0 ? runtime : 0);
-                    watchedMovie.put("service", selectedService);
-                    watchedMovie.put("timestamp", System.currentTimeMillis());
+                    // STEP 2 — inflate rating dialog
+                    LayoutInflater inflater = LayoutInflater.from(this);
+                    View ratingView = inflater.inflate(R.layout.dialog_rating, null);
+                    RatingBar ratingBar = ratingView.findViewById(R.id.ratingBar);
 
-                    // Step 3 — write to Firestore
-                    db.collection("users")
-                            .document(currentUser.getUid())
-                            .collection("watchedMovies")
-                            .add(watchedMovie)
-                            .addOnSuccessListener(docRef ->
-                                    Toast.makeText(this,
-                                            movieTitle + " marked as watched on " + selectedService + "!",
-                                            Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Failed to mark as watched", Toast.LENGTH_SHORT).show());
+                    new AlertDialog.Builder(this)
+                            .setTitle("Your rating")
+                            .setView(ratingView)
+                            .setPositiveButton("Save", (d, w) -> {
+
+                                int rating = (int) ratingBar.getRating();
+
+                                // STEP 3 — build Firestore object
+                                Map<String, Object> watchedMovie = new HashMap<>();
+                                watchedMovie.put("title", movieTitle);
+                                watchedMovie.put("genre", genre != null ? genre : "Unknown");
+                                watchedMovie.put("runtime", runtime > 0 ? runtime : 0);
+                                watchedMovie.put("service", selectedService);
+                                watchedMovie.put("rating", rating);
+                                watchedMovie.put("timestamp", System.currentTimeMillis());
+
+                                // STEP 4 — save to Firestore
+                                db.collection("users")
+                                        .document(currentUser.getUid())
+                                        .collection("watchedMovies")
+                                        .add(watchedMovie)
+                                        .addOnSuccessListener(docRef ->
+                                                Toast.makeText(this,
+                                                        movieTitle + " saved (" + rating + "★)",
+                                                        Toast.LENGTH_SHORT).show())
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(this,
+                                                        "Failed to save movie",
+                                                        Toast.LENGTH_SHORT).show());
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
 
-    // 🔊 SPOTIFY SEARCH
+
+
+
 
     private void searchSpotifySoundtrack(String movieTitle) {
         // Nice heuristic: movie title + "original motion picture soundtrack"
