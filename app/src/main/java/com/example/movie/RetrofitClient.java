@@ -8,7 +8,7 @@ public class RetrofitClient {
 
     private static RetrofitClient instance = null;
     private TMDBApi tmdbApi;
-    private CexApi cexApi;
+
 
     private RetrofitClient() {
         Retrofit tmdbRetrofit = new Retrofit.Builder()
@@ -17,11 +17,7 @@ public class RetrofitClient {
                 .build();
         tmdbApi = tmdbRetrofit.create(TMDBApi.class);
 
-        Retrofit cexRetrofit = new Retrofit.Builder()
-                .baseUrl("https://uk.webuy.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        cexApi = cexRetrofit.create(CexApi.class);
+
     }
 
     public static RetrofitClient getInstance() {
@@ -52,8 +48,5 @@ public class RetrofitClient {
         return tmdbApi.searchMovies(apiKey, query, language, page);
     }
 
-    // CeX Call
-    public Call<CexResponse> searchCexProduct(String query) {
-        return cexApi.searchProduct(query);
-    }
+
 }
