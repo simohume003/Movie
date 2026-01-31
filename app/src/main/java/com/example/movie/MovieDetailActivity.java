@@ -3,6 +3,7 @@ package com.example.movie;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +31,10 @@ import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RatingBar;
+import android.widget.LinearLayout;
+import android.net.Uri;
+import android.content.Intent;
+
 
 
 
@@ -40,6 +45,11 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView title, overview, runtime, rating, streaming, cexPrice;
     private int currentRuntime = 0;
     private String currentGenre = "Unknown";
+    //ebay
+    private LinearLayout ebayContainer;
+
+    private TextView ebayPriceText;
+
 
     // Spotify UI
     private ImageView spotifyAlbumArt;
@@ -51,6 +61,11 @@ public class MovieDetailActivity extends AppCompatActivity {
     private static final String TMDB_API_KEY = "929a54210220df3134196d46a16375b1";
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    //ebay key
+    private static final String EBAY_APP_ID = "SIMONHUM-CineScop-PRD-788b448e1-08289e48";
+
+    //logos tmdb
+    private LinearLayout streamingLogoContainer;
 
     // store Spotify album URL so we can open it
     private String spotifyAlbumUrl = null;
@@ -66,9 +81,12 @@ public class MovieDetailActivity extends AppCompatActivity {
         overview = findViewById(R.id.detailOverview);
         runtime = findViewById(R.id.detailRuntime);
         rating = findViewById(R.id.detailRating);
-        streaming = findViewById(R.id.detailStreaming);
-        cexPrice = findViewById(R.id.detailCexPrice);
         btnMarkWatched = findViewById(R.id.btnMarkWatched);
+        //ebayui
+        ebayContainer = findViewById(R.id.ebayContainer);
+        //logos
+        streamingLogoContainer = findViewById(R.id.streamingLogoContainer);
+        ebayContainer.setVisibility(View.GONE);
 
         // Spotify UI
         spotifyAlbumArt = findViewById(R.id.spotifyAlbumArt);
@@ -86,7 +104,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (movieId > 0 && movieTitle != null) {
             fetchMovieDetails(movieId);
             fetchWatchProviders(movieId);
-
+            fetchEbayPrice(movieTitle);
 
 
             btnMarkWatched.setOnClickListener(v ->
@@ -148,45 +166,64 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-
+    //ebay
+    private void fetchEbayPrice(String movieTitle) {
+        runOnUiThread(() -> {
+            ebayContainer.setVisibility(View.VISIBLE);
+            ebayContainer.setOnClickListener(v -> {
+                String url = "https://www.ebay.com/sch/i.html?_nkw="
+                        + Uri.encode(movieTitle + " DVD")+"&_sop=15";
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            });
+        });
+    }
 
     private void fetchWatchProviders(int movieId) {
         RetrofitClient.getInstance()
                 .getWatchProviders(movieId, TMDB_API_KEY)
                 .enqueue(new Callback<WatchProviderResponse>() {
                     @Override
-                    public void onResponse(Call<WatchProviderResponse> call, Response<WatchProviderResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            WatchProviderResponse wpResponse = response.body();
-                            WatchProviderResponse.CountryProviders providers = wpResponse.getResults().get("IE");
+                    public void onResponse(Call<WatchProviderResponse> call,
+                                           Response<WatchProviderResponse> response) {
 
-                            if (providers != null && providers.getFlatrate() != null) {
-                                StringBuilder sb = new StringBuilder();
-                                for (WatchProviderResponse.Provider p : providers.getFlatrate()) {
-                                    sb.append(p.getProviderName()).append(", ");
-                                }
-                                String providerText = sb.toString();
-                                if (providerText.endsWith(", "))
-                                    providerText = providerText.substring(0, providerText.length() - 2);
-                                streaming.setText("Available on: " + providerText);
-                            } else {
-                                streaming.setText("Not available on streaming platforms");
-                            }
-                        } else {
-                            streaming.setText("Streaming info not available");
+                        if (!response.isSuccessful() || response.body() == null) return;
+
+                        WatchProviderResponse.CountryProviders providers =
+                                response.body().getResults().get("IE");
+
+                        if (providers == null || providers.getFlatrate() == null) return;
+
+                        streamingLogoContainer.removeAllViews();
+                        streamingLogoContainer.setVisibility(View.VISIBLE);
+
+                        for (WatchProviderResponse.Provider provider : providers.getFlatrate()) {
+
+                            ImageView logo = new ImageView(MovieDetailActivity.this);
+
+                            LinearLayout.LayoutParams params =
+                                    new LinearLayout.LayoutParams(120, 120);
+                            params.setMarginEnd(24);
+                            logo.setLayoutParams(params);
+                            logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                            String logoUrl =
+                                    "https://image.tmdb.org/t/p/w500" + provider.getLogoPath();
+
+                            Glide.with(MovieDetailActivity.this)
+                                    .load(logoUrl)
+                                    .into(logo);
+
+                            streamingLogoContainer.addView(logo);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<WatchProviderResponse> call, Throwable t) {
-                        streaming.setText("Streaming info not available");
+                        // silent fail
                     }
                 });
     }
-
-  //ebay
-
-    private void markMovieAsWatched(String movieTitle, int runtime, String genre) {
+            private void markMovieAsWatched(String movieTitle, int runtime, String genre) {
 
         if (currentUser == null) {
             Toast.makeText(this, "Please log in to mark movies", Toast.LENGTH_SHORT).show();

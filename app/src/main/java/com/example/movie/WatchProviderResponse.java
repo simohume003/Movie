@@ -1,5 +1,7 @@
 package com.example.movie;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,5 +21,13 @@ public class WatchProviderResponse {
         private String provider_name;
 
         public String getProviderName() { return provider_name; }
+        @SerializedName("logo_path")
+        private String logoPath;
+
+        public String getLogoPath() {
+            return logoPath;
+        }
     }
+
+
 }
