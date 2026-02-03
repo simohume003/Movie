@@ -1,5 +1,6 @@
 package com.example.movie;
 
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,6 +39,30 @@ public class StatsActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) loadStats();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_log) {
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
+            } else if (id == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            return false;
+        });
+
+        findViewById(R.id.musicToMovieButton).setOnClickListener(v ->
+                startActivity(new Intent(this, MusicToMovieActivity.class))
+        );
+
+
     }
 
     private void loadStats() {

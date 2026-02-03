@@ -27,6 +27,7 @@
         <activity android:name=".LogActivity" android:exported="true"/>
         <activity android:name=".StatsActivity" android:exported="true"/>
         <activity android:name=".MovieDetailActivity" android:exported="true"/>
+        <activity android:name=".MusicToMovieActivity" android:exported="true" />
 
     </application>
 

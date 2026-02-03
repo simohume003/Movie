@@ -27,13 +27,13 @@
         android:textColor="#000000" />
 
 
-    <RatingBar
-        android:id="@+id/logRatingBar"
-        android:layout_width="81dp"
-        android:layout_height="38dp"
+    <TextView
+        android:id="@+id/logRatingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:stepSize="1" />
+        android:text="⭐ Rated: 4 / 5"
+        android:textSize="13sp"
+        android:textColor="#555555" />
 
 </LinearLayout>

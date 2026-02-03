@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,14 +29,17 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.LogViewHolder> {
     static class LogViewHolder extends RecyclerView.ViewHolder {
         ImageView poster;
         TextView title;
-        RatingBar ratingBar;
+        TextView ratingText;
+
+
 
 
         public LogViewHolder(@NonNull View itemView) {
             super(itemView);
             poster = itemView.findViewById(R.id.logPoster);
             title = itemView.findViewById(R.id.logTitle);
-            ratingBar = itemView.findViewById(R.id.logRatingBar);
+            ratingText = itemView.findViewById(R.id.logRatingText);
+
         }
     }
 
@@ -54,7 +56,12 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.LogViewHolder> {
         LogActivity.MovieLog log = logList.get(position);
 
         holder.title.setText(log.title);
-        holder.ratingBar.setRating(log.rating);
+        if (log.rating > 0) {
+            holder.ratingText.setText("⭐ Rated: " + (int) log.rating + " / 5");
+        } else {
+            holder.ratingText.setText("Not rated");
+        }
+
 
 
         holder.poster.setImageDrawable(null);

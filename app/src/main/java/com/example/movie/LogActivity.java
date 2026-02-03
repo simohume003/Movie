@@ -1,5 +1,6 @@
 package com.example.movie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +45,24 @@ public class LogActivity extends AppCompatActivity {
         } else {
             Log.e("LOG", "No logged-in user");
         }
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_log) {
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
+            } else if (id == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            return false;
+        });
+
     }
 
     private void loadUserLogs() {
@@ -69,6 +89,6 @@ public class LogActivity extends AppCompatActivity {
         public String service;
         public long timestamp;
 
-        public MovieLog() {} // required by Firestore
+        public MovieLog() {}
     }
 }

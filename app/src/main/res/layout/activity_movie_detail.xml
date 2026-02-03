@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- HERO BACKDROP SECTION -->
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="350dp">
@@ -84,24 +84,42 @@
 
             <!-- STREAMING -->
             <TextView
-                android:id="@+id/detailStreaming"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Available on: Netflix"
+                android:text="Available on"
                 android:textColor="#AAAAAA"
                 android:textSize="14sp"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"/>
 
-            <!-- CEX PRICE -->
-            <TextView
-                android:id="@+id/detailCexPrice"
+            <LinearLayout
+                android:id="@+id/streamingLogoContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="CEX Price: €."
-                android:textColor="#AAAAAA"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
 
+
+
+            <!-- eBay -->
+            <LinearLayout
+                android:id="@+id/ebayContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:layout_marginTop="12dp"
+                android:background="#F5F5F5"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/ebayLogo"
+                    android:src="@drawable/ebay"
+                    android:contentDescription="Buy on ebay"
+                    android:scaleType="fitCenter" />
+            </LinearLayout>
 
             <!-- SPOTIFY SECTION -->
             <TextView
