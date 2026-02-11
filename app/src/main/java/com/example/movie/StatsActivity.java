@@ -62,6 +62,16 @@ public class StatsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, MusicToMovieActivity.class))
         );
 
+        findViewById(R.id.logoutButton).setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+
+            Intent intent = new Intent(StatsActivity.this, SignUpActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+
 
     }
 

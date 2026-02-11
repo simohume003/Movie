@@ -47,6 +47,8 @@ public class RetrofitClient {
     public Call<MovieResponse> searchMovies(String apiKey, String query, String language, int page) {
         return tmdbApi.searchMovies(apiKey, query, language, page);
     }
-
+public Call<MovieResponse >discoverMovies (String apiKey,String genreId,String providerId,String monetization,String region,String sortBy){
+        return tmdbApi.discoverMovies(apiKey,genreId,providerId,monetization,region,sortBy);
+}
 
 }

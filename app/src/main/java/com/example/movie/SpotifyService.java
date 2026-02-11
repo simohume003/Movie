@@ -14,4 +14,13 @@ public interface SpotifyService {
             @Query("type") String type,
             @Query("limit") int limit
     );
+
+    @GET("v1/search")
+    Call<SpotifyTrackSearchResponse> searchTracks(
+            @Header("Authorization") String authHeader,
+            @Query("q") String query,
+            @Query("type") String type,
+            @Query("limit") int limit
+    );
+
 }

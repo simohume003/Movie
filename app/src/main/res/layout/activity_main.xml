@@ -37,6 +37,37 @@
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <CheckBox
+                    android:id="@+id/filterNetflix"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Netflix"
+                    android:textColor="#FFFFFF"/>
+
+                <CheckBox
+                    android:id="@+id/filterPrime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Prime"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="12dp"/>
+
+                <CheckBox
+                    android:id="@+id/filterDisney"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Disney+"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="12dp"/>
+            </LinearLayout>
+
+
         </LinearLayout>
         <!-- Search Bar -->
         <androidx.appcompat.widget.SearchView
@@ -170,7 +201,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="25dp"
             android:scrollbars="vertical" />
 
 

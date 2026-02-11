@@ -5,6 +5,12 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/backround_gradient">
+    <ImageView
+        android:layout_width="243dp"
+
+        android:layout_height="158dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/cinescope" />
 
     <EditText
         android:id="@+id/emailInput"

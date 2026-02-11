@@ -41,4 +41,14 @@ public interface TMDBApi {
             @Query("language") String language,
             @Query("page") int page
     );
+    @GET("discover/movie")
+    Call<MovieResponse> discoverMovies(
+            @Query("api_key") String apiKey,
+            @Query("with_genres") String genreId,
+            @Query("with_watch_providers") String providerId,
+            @Query("with_watch_monetization_types") String monetization,
+            @Query("watch_region") String region,
+            @Query("sort_by") String sort
+    );
+
 }

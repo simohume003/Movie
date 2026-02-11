@@ -124,4 +124,132 @@ public class RecommendationEngine {
                     callback.onResult(new ArrayList<>());
                 });
     }
+    public static class DiscoverRequest {
+        public final String genre;
+        public final String service;
+        public final String heading;
+
+        public DiscoverRequest(String heading, String genre, String service) {
+            this.heading = heading;
+            this.genre = genre;
+            this.service = service;
+        }
+    }
+    public List<DiscoverRequest> buildPersonalisedDiscoverRequests(
+            String favouriteGenre,
+            String topService,
+            String leastUsedService
+    ) {
+        List<DiscoverRequest> list = new ArrayList<>();
+
+        if (favouriteGenre == null || topService == null) return list;
+
+        list.add(new DiscoverRequest(
+                "Because you like " + favouriteGenre + " on " + topService,
+                favouriteGenre,
+                topService
+        ));
+
+        if (leastUsedService != null && !leastUsedService.equalsIgnoreCase(topService)) {
+            list.add(new DiscoverRequest(
+                    "You love " + favouriteGenre + " — try it on " + leastUsedService,
+                    favouriteGenre,
+                    leastUsedService
+            ));
+        }
+
+        return list;
+    }
+    public interface DiscoverCallback {
+        void onResult(List<DiscoverRequest> requests);
+    }
+    public void getPersonalisedDiscoverRequests(@NonNull DiscoverCallback callback) {
+
+        if (auth.getCurrentUser() == null) {
+            callback.onResult(new ArrayList<>());
+            return;
+        }
+
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(uid)
+                .collection("watchedMovies")
+                .get()
+                .addOnSuccessListener(snap -> {
+
+                    Map<String, Integer> genreCount = new HashMap<>();
+                    Map<String, Integer> serviceCount = new HashMap<>();
+
+                    for (DocumentSnapshot doc : snap) {
+                        String genre = doc.getString("genre");
+                        String service = doc.getString("service");
+                        Long rating = doc.getLong("rating");
+
+                        if (rating == null || rating < 3) continue;
+
+                        if (genre != null) {
+                            genreCount.put(genre, genreCount.getOrDefault(genre, 0) + 1);
+                        }
+                        if (service != null && !service.equalsIgnoreCase("Other")) {
+                            serviceCount.put(service, serviceCount.getOrDefault(service, 0) + 1);
+                        }
+                    }
+
+                    if (genreCount.isEmpty() || serviceCount.isEmpty()) {
+                        callback.onResult(new ArrayList<>());
+                        return;
+                    }
+
+                    String favGenre = maxKey(genreCount);
+                    String topService = maxKey(serviceCount);
+                    String leastService = minKey(serviceCount);
+
+                    callback.onResult(
+                            buildPersonalisedDiscoverRequests(
+                                    favGenre,
+                                    topService,
+                                    leastService
+                            )
+                    );
+                })
+                .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
+    }
+
+    private String maxKey(Map<String, Integer> map) {
+        String bestKey = "N/A";
+        int bestVal = Integer.MIN_VALUE;
+
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            if (e.getValue() != null && e.getValue() > bestVal) {
+                bestVal = e.getValue();
+                bestKey = e.getKey();
+            }
+        }
+        return bestKey;
+    }
+
+    private String minKey(Map<String, Integer> map) {
+        String bestKey = "N/A";
+        int bestVal = Integer.MAX_VALUE;
+
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            if (e.getValue() != null && e.getValue() < bestVal) {
+                bestVal = e.getValue();
+                bestKey = e.getKey();
+            }
+        }
+        return bestKey;
+    }
+
+    private List<String> sortTop(Map<String, Integer> scoreMap, int limit) {
+        List<String> list = new ArrayList<>(scoreMap.keySet());
+        list.sort((a, b) -> scoreMap.get(b) - scoreMap.get(a));
+
+        if (list.size() > limit) {
+            return list.subList(0, limit);
+        }
+        return list;
+    }
+
 }

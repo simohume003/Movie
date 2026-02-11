@@ -43,8 +43,18 @@
                 android:id="@+id/musicToMovieButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Music → Movie (Experimental)"
+                android:text="(AI)Music  → Movie Reccomendation "
                 android:layout_marginTop="16dp"/>
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Log Out"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="#D32F2F"
+                android:textColor="#FFFFFF"/>
+
 
 
             <TextView

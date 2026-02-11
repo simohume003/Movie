@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Music → Movie 🎧🎬"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#222222"
+        android:layout_marginBottom="6dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick a song and get a movie recommendation"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="16dp"/>
+
+
+    <EditText
+        android:id="@+id/songSearchInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search a song..."
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/edit_text"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/songResultsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"/>
+
+
+    <LinearLayout
+        android:id="@+id/movieResultCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="gone"
+        android:background="#F5F5F5"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:id="@+id/moviePoster"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp"
+            android:background="#E0E0E0"/>
+
+        <TextView
+            android:id="@+id/movieTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/movieReasonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="6dp"
+            android:textColor="#555555"
+            android:layout_marginTop="6dp"/>
+    </LinearLayout>
+
+</LinearLayout>
