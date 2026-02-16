@@ -1,5 +1,6 @@
 package com.example.movie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +46,28 @@ public class MusicToMovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_to_movie);
 
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_log) {
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
+            } else if (id == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            return false;
+        });
+
         movieResultCard = findViewById(R.id.movieResultCard);
         movieTitleText = findViewById(R.id.movieTitleText);
         movieReasonText = findViewById(R.id.movieReasonText);
         moviePoster = findViewById(R.id.moviePoster);
-
-
         songSearchInput = findViewById(R.id.songSearchInput);
         songResultsRecycler = findViewById(R.id.songResultsRecycler);
 
@@ -98,7 +116,6 @@ public class MusicToMovieActivity extends AppCompatActivity {
                 }
             });
         });
-
 
         songResultsRecycler.setAdapter(adapter);
 

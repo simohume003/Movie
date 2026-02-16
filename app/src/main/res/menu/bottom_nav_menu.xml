@@ -16,4 +16,10 @@
         android:title="Profile"
         android:icon="@android:drawable/ic_menu_info_details" />
 
+    <item
+        android:id="@+id/nav_music"
+        android:icon="@drawable/musicnote"
+        android:title="Music" />
+
+
 </menu>

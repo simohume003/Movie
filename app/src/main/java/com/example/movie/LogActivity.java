@@ -60,6 +60,11 @@ public class LogActivity extends AppCompatActivity {
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
             }
+            else if (id == R.id.nav_music) {
+                startActivity(new Intent(this, MusicToMovieActivity.class));
+                return true;
+            }
+
             return false;
         });
 

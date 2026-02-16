@@ -39,12 +39,6 @@
                 android:textColor="#666666"
                 android:layout_marginBottom="20dp"/>
 
-            <Button
-                android:id="@+id/musicToMovieButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(AI)Music  → Movie Reccomendation "
-                android:layout_marginTop="16dp"/>
 
             <Button
                 android:id="@+id/logoutButton"

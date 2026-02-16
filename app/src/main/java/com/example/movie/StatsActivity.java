@@ -55,12 +55,14 @@ public class StatsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
             }
+            else if (id == R.id.nav_music) {
+                startActivity(new Intent(this, MusicToMovieActivity.class));
+                return true;
+            }
+
             return false;
         });
 
-        findViewById(R.id.musicToMovieButton).setOnClickListener(v ->
-                startActivity(new Intent(this, MusicToMovieActivity.class))
-        );
 
         findViewById(R.id.logoutButton).setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
