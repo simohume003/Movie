@@ -27,6 +27,9 @@ public class StatsActivity extends AppCompatActivity {
     private LinearLayout statsContainer;
     private Map<String,Integer> serviceCount= new HashMap<>();
 
+    Map<String, Integer> directorCount = new HashMap<>();
+
+
 
 
     @Override
@@ -92,12 +95,20 @@ public class StatsActivity extends AppCompatActivity {
                         Long runtime = doc.getLong("runtime");
                         String genre = doc.getString("genre");
                         String service = doc.getString("service");
+                        String director = doc.getString("director");
+
 
                         if (runtime != null) totalMinutes += runtime;
                         if (genre != null)
                             genreCount.put(genre, genreCount.getOrDefault(genre, 0) + 1);
                         if (service != null)
                             serviceCount.put(service, serviceCount.getOrDefault(service, 0) + 1);
+
+                        if (director != null && !director.isEmpty()) {
+                            directorCount.put(director,
+                                    directorCount.getOrDefault(director, 0) + 1);
+                        }
+
                     }
 
                     String topGenre = "N/A";
@@ -109,6 +120,11 @@ public class StatsActivity extends AppCompatActivity {
                             topGenre = entry.getKey();
                         }
                     }
+                    String topDirector = directorCount.entrySet().stream()
+                            .max(Map.Entry.comparingByValue())
+                            .map(Map.Entry::getKey)
+                            .orElse("N/A");
+
 
 
                     String topService = serviceCount.entrySet().stream()
@@ -125,6 +141,11 @@ public class StatsActivity extends AppCompatActivity {
                     LinearLayout servicePanel =
                             addExpandableStatPanel("🍿 Top Streaming Service", topService);
                     populateTextBreakdown(servicePanel, serviceCount);
+
+                    LinearLayout directorPanel =
+                            addExpandableStatPanel("🎥 Most Watched Director", topDirector);
+                    populateTextBreakdown(directorPanel, directorCount);
+
 
                 });
     }
