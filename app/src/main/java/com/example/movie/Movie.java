@@ -61,4 +61,12 @@ public class Movie {
     public Float getVoteAverage() {
         return voteAverage;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
 }

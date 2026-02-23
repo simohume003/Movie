@@ -50,5 +50,18 @@ public class RetrofitClient {
 public Call<MovieResponse >discoverMovies (String apiKey,String genreId,String providerId,String monetization,String region,String sortBy){
         return tmdbApi.discoverMovies(apiKey,genreId,providerId,monetization,region,sortBy);
 }
+    public Call<PersonApiResponse.PersonSearchResponse> searchPerson(
+            String apiKey,
+            String name
+    ) {
+        return tmdbApi.searchPerson(apiKey, name);
+    }
+
+    public Call<PersonApiResponse.PersonCreditsResponse> getPersonCredits(
+            int personId,
+            String apiKey
+    ) {
+        return tmdbApi.getPersonCredits(personId, apiKey);
+    }
 
 }

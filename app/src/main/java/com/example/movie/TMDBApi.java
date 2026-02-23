@@ -50,5 +50,16 @@ public interface TMDBApi {
             @Query("watch_region") String region,
             @Query("sort_by") String sort
     );
+    @GET("search/person")
+    Call<PersonApiResponse.PersonSearchResponse> searchPerson(
+            @Query("api_key") String apiKey,
+            @Query("query") String name
+    );
+
+    @GET("person/{person_id}/movie_credits")
+    Call<PersonApiResponse.PersonCreditsResponse> getPersonCredits(
+            @Path("person_id") int personId,
+            @Query("api_key") String apiKey
+    );
 
 }
