@@ -1,6 +1,7 @@
 package com.example.movie;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Movie {
@@ -68,5 +69,9 @@ public class Movie {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

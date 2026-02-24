@@ -251,5 +251,55 @@ public class RecommendationEngine {
         }
         return list;
     }
+    public interface DirectorCallback {
+        void onResult(List<String> directors);
+    }
+
+    public void getTopDirectors(@NonNull DirectorCallback callback) {
+
+        if (auth.getCurrentUser() == null) {
+            callback.onResult(new ArrayList<>());
+            return;
+        }
+
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(uid)
+                .collection("watchedMovies")
+                .get()
+                .addOnSuccessListener(snap -> {
+
+                    Map<String, Integer> directorCount = new HashMap<>();
+
+                    for (DocumentSnapshot doc : snap) {
+                        String director = doc.getString("director");
+                        Long rating = doc.getLong("rating");
+
+                        if (director == null || rating == null || rating < 3) continue;
+
+                        directorCount.put(
+                                director,
+                                directorCount.getOrDefault(director, 0) + 1
+                        );
+                    }
+
+                    if (directorCount.isEmpty()) {
+                        callback.onResult(new ArrayList<>());
+                        return;
+                    }
+
+                    List<String> sorted = new ArrayList<>(directorCount.keySet());
+                    sorted.sort((a, b) -> directorCount.get(b) - directorCount.get(a));
+
+                    if (sorted.size() > 3) {
+                        sorted = sorted.subList(0, 3);
+                    }
+
+                    callback.onResult(sorted);
+                })
+                .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
+    }
+
 
 }
