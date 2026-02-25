@@ -59,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean filterPrime;
     private boolean filterDisney;
 
+    private RecyclerView recyclerViewDirectorBar;
+    private TextView tvDirectorBar;
+    private final List<Movie> directorMovies = new ArrayList<>();
+    private MovieAdapter directorAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,7 +149,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         recommendedAdapter = new MovieAdapter(recommendedMovies, true);
+
+
         recyclerViewRecommended.setAdapter(recommendedAdapter);
+
+        recyclerViewDirectorBar = findViewById(R.id.recyclerViewDirectorBar);
+
+
+        tvDirectorBar = findViewById(R.id.tvDirectorBar);
+
+        recyclerViewDirectorBar.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+
+        directorAdapter = new MovieAdapter(directorMovies, true);
+        recyclerViewDirectorBar.setAdapter(directorAdapter);
 
         // Data
         fetchNowPlayingMovies();
@@ -153,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         loadPersonalisedBars();
         setupSearch();
         setupBottomNavigation(bottomNavigationView);
+        loadDirectorBar();
     }
 
 
@@ -430,6 +450,100 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void loadDirectorBar() {
+
+        RecommendationEngine engine = new RecommendationEngine();
+
+        engine.getTopDirectors(directors -> {
+
+            if (directors == null || directors.isEmpty()) return;
+
+            tvDirectorBar.setText("More from your favourite directors");
+            tvDirectorBar.setVisibility(View.VISIBLE);
+            recyclerViewDirectorBar.setVisibility(View.VISIBLE);
+
+            directorMovies.clear();
+
+            for (String director : directors) {
+                fetchMoviesByDirector(director);
+            }
+        });
+    }
+    private void fetchMoviesByDirector(String directorName) {
+
+        RetrofitClient.getInstance()
+                .searchPerson(API_KEY, directorName)
+                .enqueue(new Callback<PersonApiResponse.PersonSearchResponse>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<PersonApiResponse.PersonSearchResponse> call,
+                            Response<PersonApiResponse.PersonSearchResponse> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null
+                                || response.body().getResults().isEmpty()) {
+                            return;
+                        }
+
+                        int personId =
+                                response.body().getResults().get(0).getId();
+
+                        fetchDirectorCredits(personId);
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<PersonApiResponse.PersonSearchResponse> call,
+                            Throwable t) {
+
+                        Log.e("DIRECTOR_BAR", "Person search failed", t);
+                    }
+                });
+    }
+    private void fetchDirectorCredits(int personId) {
+
+        RetrofitClient.getInstance()
+                .getPersonCredits(personId, API_KEY)
+                .enqueue(new Callback<PersonApiResponse.PersonCreditsResponse>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Response<PersonApiResponse.PersonCreditsResponse> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null) {
+                            return;
+                        }
+
+                        for (PersonApiResponse.PersonCreditsResponse.Crew crew
+                                : response.body().getCrew()) {
+
+                            if ("Director".equals(crew.getJob())
+                                    && crew.getPosterPath() != null) {
+
+                                Movie movie = new Movie();
+                                movie.setId(crew.getId());
+                                movie.setTitle(crew.getTitle());
+                                movie.setPosterPath(crew.getPosterPath());
+
+                                directorMovies.add(movie);
+                            }
+                        }
+
+                        directorAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Throwable t) {
+
+                        Log.e("DIRECTOR_BAR", "fail", t);
+                    }
+                });
+    }
 
 
 
