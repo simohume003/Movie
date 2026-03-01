@@ -63,5 +63,11 @@ public Call<MovieResponse >discoverMovies (String apiKey,String genreId,String p
     ) {
         return tmdbApi.getPersonCredits(personId, apiKey);
     }
+    public Call<PersonApiResponse.PersonCreditsResponse> getMovieCredits(
+            int movieId,
+            String apiKey
+    ) {
+        return tmdbApi.getMovieCredits(movieId, apiKey);
+    }
 
 }

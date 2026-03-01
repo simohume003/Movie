@@ -43,6 +43,11 @@ public class PersonApiResponse {
 
             public String getJob() { return job; }
             public String getTitle() { return title; }
+            private String name;
+
+            public String getName() {
+                return name;
+            }
             public String getPosterPath() { return posterPath; }
         }
     }

@@ -62,4 +62,10 @@ public interface TMDBApi {
             @Query("api_key") String apiKey
     );
 
+    @GET("movie/{movie_id}/credits")
+    Call<PersonApiResponse.PersonCreditsResponse> getMovieCredits(
+            @Path("movie_id") int movieId,
+            @Query("api_key") String apiKey
+    );
+
 }
