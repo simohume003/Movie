@@ -45,6 +45,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView title, overview, runtime, rating, streaming, cexPrice;
     private int currentRuntime = 0;
     private String currentGenre = "Unknown";
+    private String currentDirector = "Unknown";
     //ebay
     private LinearLayout ebayContainer;
 
@@ -108,7 +109,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
 
             btnMarkWatched.setOnClickListener(v ->
-                    markMovieAsWatched(movieTitle, currentRuntime, currentGenre));
+                    markMovieAsWatched(movieTitle, currentRuntime, currentGenre,currentDirector));
 
 
 
@@ -162,6 +163,31 @@ public class MovieDetailActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<Movie> call, Throwable t) {
                         title.setText("Error loading details");
+                    }
+                });
+        RetrofitClient.getInstance()
+                .getMovieCredits(movieId, TMDB_API_KEY)
+                .enqueue(new Callback<PersonApiResponse.PersonCreditsResponse>() {
+                    @Override
+                    public void onResponse(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Response<PersonApiResponse.PersonCreditsResponse> response) {
+
+                        if (!response.isSuccessful() || response.body() == null) return;
+
+                        for (PersonApiResponse.PersonCreditsResponse.Crew crew :
+                                response.body().getCrew()) {
+
+                            if ("Director".equals(crew.getJob())) {
+                                currentDirector = crew.getName();
+                                break;
+                            }
+                        }
+                    }
+                    @Override
+                    public void onFailure(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Throwable t) {
                     }
                 });
     }
@@ -223,7 +249,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     }
                 });
     }
-            private void markMovieAsWatched(String movieTitle, int runtime, String genre) {
+            private void markMovieAsWatched(String movieTitle, int runtime, String genre,String Director) {
 
         if (currentUser == null) {
             Toast.makeText(this, "Please log in to mark movies", Toast.LENGTH_SHORT).show();
@@ -258,6 +284,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 watchedMovie.put("runtime", runtime > 0 ? runtime : 0);
                                 watchedMovie.put("service", selectedService);
                                 watchedMovie.put("rating", rating);
+                                watchedMovie.put("director", currentDirector != null ? currentDirector : "Unknown");
                                 watchedMovie.put("timestamp", System.currentTimeMillis());
 
                                 // STEP 4 — save to Firestore
