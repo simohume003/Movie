@@ -192,6 +192,23 @@
                     android:paddingEnd="8dp"
                     android:scrollbars="none" />
 
+                <TextView
+                    android:id="@+id/tvDirectorBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="From your favourite directors"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewDirectorBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
         </ScrollView>
