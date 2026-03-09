@@ -22,6 +22,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -216,30 +217,62 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                         WatchProviderResponse.CountryProviders providers =
                                 response.body().getResults().get("IE");
-
-                        if (providers == null || providers.getFlatrate() == null) return;
+                        boolean netflixIE = false;
+                        boolean netflixUS = false;
 
                         streamingLogoContainer.removeAllViews();
                         streamingLogoContainer.setVisibility(View.VISIBLE);
 
-                        for (WatchProviderResponse.Provider provider : providers.getFlatrate()) {
+                        List<WatchProviderResponse.Provider> ieProviders =
+                                providers != null ? providers.getFlatrate() : null;
 
-                            ImageView logo = new ImageView(MovieDetailActivity.this);
+                        if (ieProviders != null) {
 
-                            LinearLayout.LayoutParams params =
-                                    new LinearLayout.LayoutParams(120, 120);
-                            params.setMarginEnd(24);
-                            logo.setLayoutParams(params);
-                            logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                            for (WatchProviderResponse.Provider provider :ieProviders) {
+                                if ("Netflix".equals(provider.getProviderName())) {
+                                    netflixIE = true;
+                                }
+                                ImageView logo = new ImageView(MovieDetailActivity.this);
 
-                            String logoUrl =
-                                    "https://image.tmdb.org/t/p/w500" + provider.getLogoPath();
+                                LinearLayout.LayoutParams params =
+                                        new LinearLayout.LayoutParams(120, 120);
+                                params.setMarginEnd(24);
+                                logo.setLayoutParams(params);
+                                logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-                            Glide.with(MovieDetailActivity.this)
-                                    .load(logoUrl)
-                                    .into(logo);
+                                String logoUrl =
+                                        "https://image.tmdb.org/t/p/w500" + provider.getLogoPath();
 
-                            streamingLogoContainer.addView(logo);
+                                Glide.with(MovieDetailActivity.this)
+                                        .load(logoUrl)
+                                        .into(logo);
+
+                                streamingLogoContainer.addView(logo);
+                            }
+                        }
+                        WatchProviderResponse.CountryProviders usProviders =
+                                response.body().getResults().get("US");
+
+                            List<WatchProviderResponse.Provider> usList =
+                                    usProviders != null ? usProviders.getFlatrate() : null;
+
+                            if (usList != null) {
+
+                                for (WatchProviderResponse.Provider provider : usList) {
+
+                                if ("Netflix".equals(provider.getProviderName())) {
+                                    netflixUS = true;
+                                }
+                            }
+                        }
+                        if (!netflixIE && netflixUS) {
+
+                            TextView usNetflix = new TextView(MovieDetailActivity.this);
+                            usNetflix.setText("Netflix 🇺🇸");
+                            usNetflix.setTextSize(14);
+                            usNetflix.setPadding(12, 12, 12, 12);
+
+                            streamingLogoContainer.addView(usNetflix);
                         }
                     }
 
