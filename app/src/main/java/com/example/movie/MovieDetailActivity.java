@@ -266,13 +266,19 @@ public class MovieDetailActivity extends AppCompatActivity {
                             }
                         }
                         if (!netflixIE && netflixUS) {
+                            ImageView usNetflixLogo = new ImageView(MovieDetailActivity.this);
 
-                            TextView usNetflix = new TextView(MovieDetailActivity.this);
-                            usNetflix.setText("Netflix 🇺🇸");
-                            usNetflix.setTextSize(14);
-                            usNetflix.setPadding(12, 12, 12, 12);
+                            LinearLayout.LayoutParams params =
+                                    new LinearLayout.LayoutParams(120, 120);
+                            params.setMarginEnd(24);
 
-                            streamingLogoContainer.addView(usNetflix);
+                            usNetflixLogo.setLayoutParams(params);
+                            usNetflixLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                            usNetflixLogo.setImageResource(R.drawable.nam);
+
+                            streamingLogoContainer.addView(usNetflixLogo);
+
                         }
                     }
 
