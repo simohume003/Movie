@@ -209,6 +209,23 @@
                     android:layout_height="200dp"
                     android:visibility="gone"/>
 
+                <TextView
+                    android:id="@+id/tvActorBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="From your favourite Actors"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewActorBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
         </ScrollView>
