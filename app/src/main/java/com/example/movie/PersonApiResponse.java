@@ -73,9 +73,13 @@ public class PersonApiResponse {
 
             private int id;
             private String name;
+            private String title;
 
             @SerializedName("profile_path")
             private String profilePath;
+
+            @SerializedName("poster_path")
+            private String posterPath;
 
             public int getId() {
                 return id;
@@ -87,6 +91,14 @@ public class PersonApiResponse {
 
             public String getProfilePath() {
                 return profilePath;
+            }
+
+            public String getTitle() {
+                return title;
+
+            }
+            public String getPosterPath() {
+                return posterPath;
             }
         }
     }
