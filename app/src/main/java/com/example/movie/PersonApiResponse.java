@@ -14,7 +14,10 @@ public class PersonApiResponse {
 
         public static class Person {
             private int id;
-            public int getId() { return id; }
+
+            public int getId() {
+                return id;
+            }
         }
     }
 
@@ -22,6 +25,12 @@ public class PersonApiResponse {
 
         @SerializedName("crew")
         private List<Crew> crew;
+        @SerializedName("cast")
+        private List<PersonCreditsResponse.Cast> cast;
+
+        public List<PersonCreditsResponse.Cast> getCast() {
+            return cast;
+        }
 
         public List<Crew> getCrew() {
             return crew;
@@ -41,14 +50,44 @@ public class PersonApiResponse {
                 return id;
             }
 
-            public String getJob() { return job; }
-            public String getTitle() { return title; }
+            public String getJob() {
+                return job;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
             private String name;
 
             public String getName() {
                 return name;
             }
-            public String getPosterPath() { return posterPath; }
+
+            public String getPosterPath() {
+                return posterPath;
+            }
+        }
+
+        public static class Cast {
+
+            private int id;
+            private String name;
+
+            @SerializedName("profile_path")
+            private String profilePath;
+
+            public int getId() {
+                return id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public String getProfilePath() {
+                return profilePath;
+            }
         }
     }
 }

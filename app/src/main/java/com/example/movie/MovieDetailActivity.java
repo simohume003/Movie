@@ -47,6 +47,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     private int currentRuntime = 0;
     private String currentGenre = "Unknown";
     private String currentDirector = "Unknown";
+    private String currentActor = "Unknown";
+
     //ebay
     private LinearLayout ebayContainer;
 
@@ -183,6 +185,15 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 currentDirector = crew.getName();
                                 break;
                             }
+                        }
+                        List<PersonApiResponse.PersonCreditsResponse.Cast> castList =
+                                response.body().getCast();
+
+                        if (castList != null && !castList.isEmpty()) {
+
+                            PersonApiResponse.PersonCreditsResponse.Cast topActor = castList.get(0);
+
+                            currentActor = topActor.getName();
                         }
                     }
                     @Override
@@ -324,6 +335,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                                 watchedMovie.put("service", selectedService);
                                 watchedMovie.put("rating", rating);
                                 watchedMovie.put("director", currentDirector != null ? currentDirector : "Unknown");
+                                watchedMovie.put("actor", currentActor != null ? currentActor : "Unknown");
                                 watchedMovie.put("timestamp", System.currentTimeMillis());
 
                                 // STEP 4 — save to Firestore
