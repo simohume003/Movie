@@ -26,6 +26,9 @@ public class RecommendationEngine {
     public interface RecommendationCallback {
         void onResult(List<String> movieTitles);
     }
+    public interface ActorCallback {
+        void onResult(List<String> actors);
+    }
 
     public void getRecommendations(@NonNull RecommendationCallback callback) {
 
@@ -300,6 +303,52 @@ public class RecommendationEngine {
                 })
                 .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
     }
+    public void getTopActor(@NonNull ActorCallback callback) {
+
+        if (auth.getCurrentUser() == null) {
+            callback.onResult(new ArrayList<>());
+            return;
+        }
+
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(uid)
+                .collection("watchedMovies")
+                .get()
+                .addOnSuccessListener(snap -> {
+
+                    Map<String, Integer> actorCount = new HashMap<>();
+
+                    for (DocumentSnapshot doc : snap) {
+                        String actor = doc.getString("actor");
+                        Long rating = doc.getLong("rating");
+
+                        if (actor == null || rating == null || rating < 3) continue;
+
+                        actorCount.put(
+                                actor,
+                                actorCount.getOrDefault(actor, 0) + 1
+                        );
+                    }
+
+                    if (actorCount.isEmpty()) {
+                        callback.onResult(new ArrayList<>());
+                        return;
+                    }
+
+                    List<String> sorted = new ArrayList<>(actorCount.keySet());
+                    sorted.sort((a, b) -> actorCount.get(b) - actorCount.get(a));
+
+                    if (sorted.size() > 3) {
+                        sorted = sorted.subList(0, 3);
+                    }
+
+                    callback.onResult(sorted);
+                })
+                .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
+    }
+
 
 
 }
