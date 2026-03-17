@@ -64,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
     private final List<Movie> directorMovies = new ArrayList<>();
     private MovieAdapter directorAdapter;
 
+    private RecyclerView recyclerViewActorBar;
+    private TextView tvActorBar;
+    private final List<Movie> actorMovies = new ArrayList<>();
+    private MovieAdapter actorAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,6 +170,15 @@ public class MainActivity extends AppCompatActivity {
         directorAdapter = new MovieAdapter(directorMovies, true);
         recyclerViewDirectorBar.setAdapter(directorAdapter);
 
+        tvActorBar = findViewById(R.id.tvActorBar);
+        recyclerViewActorBar = findViewById(R.id.recyclerViewActorBar);
+        recyclerViewActorBar.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+
+        actorAdapter = new MovieAdapter(actorMovies, true);
+        recyclerViewActorBar.setAdapter(actorAdapter);
+
         // Data
         fetchNowPlayingMovies();
         fetchUpcomingMovies();
@@ -173,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         setupSearch();
         setupBottomNavigation(bottomNavigationView);
         loadDirectorBar();
+        loadActorBar();
     }
 
 
@@ -541,6 +556,100 @@ public class MainActivity extends AppCompatActivity {
                             Throwable t) {
 
                         Log.e("DIRECTOR_BAR", "fail", t);
+                    }
+                });
+    }
+
+    private void loadActorBar() {
+
+        RecommendationEngine engine = new RecommendationEngine();
+
+        engine.getTopActor(actors -> {
+
+            if (actors == null || actors.isEmpty()) return;
+
+            tvActorBar.setText("More from your favourite Actors");
+            tvActorBar.setVisibility(View.VISIBLE);
+            recyclerViewActorBar.setVisibility(View.VISIBLE);
+
+            actorMovies.clear();
+
+            for (String actor: actors) {
+                fetchMoviesByActor(actor);
+            }
+        });
+    }
+    private void fetchMoviesByActor(String actorName) {
+
+        RetrofitClient.getInstance()
+                .searchPerson(API_KEY, actorName)
+                .enqueue(new Callback<PersonApiResponse.PersonSearchResponse>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<PersonApiResponse.PersonSearchResponse> call,
+                            Response<PersonApiResponse.PersonSearchResponse> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null
+                                || response.body().getResults().isEmpty()) {
+                            return;
+                        }
+
+                        int personId =
+                                response.body().getResults().get(0).getId();
+
+                        fetchActorCredits(personId);
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<PersonApiResponse.PersonSearchResponse> call,
+                            Throwable t) {
+
+                        Log.e("Actor_BAR", "Person search failed", t);
+                    }
+                });
+    }
+    private void fetchActorCredits(int personId) {
+
+        RetrofitClient.getInstance()
+                .getPersonCredits(personId, API_KEY)
+                .enqueue(new Callback<PersonApiResponse.PersonCreditsResponse>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Response<PersonApiResponse.PersonCreditsResponse> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null) {
+                            return;
+                        }
+
+                        for (PersonApiResponse.PersonCreditsResponse.Cast cast
+                                : response.body().getCast()) {
+
+                            if (cast.getPosterPath() != null) {
+
+                                Movie movie = new Movie();
+
+                                movie.setId(cast.getId());
+                                movie.setTitle(cast.getTitle());
+                                movie.setPosterPath(cast.getPosterPath());
+                                actorMovies.add(movie);
+                            }
+                        }
+
+                        actorAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<PersonApiResponse.PersonCreditsResponse> call,
+                            Throwable t) {
+
+                        Log.e("Actor_BAR", "fail", t);
                     }
                 });
     }
