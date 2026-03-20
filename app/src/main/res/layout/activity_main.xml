@@ -163,6 +163,15 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginTop="18dp"/>
+
+                <TextView
+                    android:id="@+id/tvRecommended2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Users with similar intrests also like"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="18dp"/>
                 <!-- New Releases -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewRecommended"
