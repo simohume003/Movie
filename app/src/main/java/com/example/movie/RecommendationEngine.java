@@ -348,6 +348,7 @@ public class RecommendationEngine {
                 })
                 .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
     }
+    //commiting this line to see if my github works ???
     public void getSimilarUserRecommendations(@NonNull RecommendationCallback callback) {
 
         if (auth.getCurrentUser() == null) {
