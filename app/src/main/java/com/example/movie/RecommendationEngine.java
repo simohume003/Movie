@@ -348,7 +348,103 @@ public class RecommendationEngine {
                 })
                 .addOnFailureListener(e -> callback.onResult(new ArrayList<>()));
     }
+    public void getSimilarUserRecommendations(@NonNull RecommendationCallback callback) {
 
+        if (auth.getCurrentUser() == null) {
+            Log.w(TAG, "No logged-in user");
+            callback.onResult(new ArrayList<>());
+            return;
+        }
+
+        String currentUserId = auth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(currentUserId)
+                .collection("watchedMovies")
+                .get()
+                .addOnSuccessListener(myMoviesSnapshot -> {
+
+                    Set<String> myLikedMovies = new HashSet<>();
+                    Map<String, Integer> myGenreCount = new HashMap<>();
+
+                    for (DocumentSnapshot doc : myMoviesSnapshot.getDocuments()) {
+                        String title = doc.getString("title");
+                        String genre = doc.getString("genre");
+                        Long rating = doc.getLong("rating");
+
+                        if (title == null || rating == null) continue;
+
+                        if (rating >= 3) {
+                            myLikedMovies.add(title);
+
+                            if (genre != null) {
+                                myGenreCount.put(genre, myGenreCount.getOrDefault(genre, 0) + 1);
+                            }
+                        }
+                    }
+
+                    if (myLikedMovies.isEmpty() || myGenreCount.isEmpty()) {
+                        callback.onResult(new ArrayList<>());
+                        return;
+                    }
+
+                    String favouriteGenre = maxKey(myGenreCount);
+
+                    db.collectionGroup("watchedMovies")
+                            .get()
+                            .addOnSuccessListener(allMoviesSnapshot -> {
+
+                                Map<String, Integer> scoreMap = new HashMap<>();
+
+                                for (DocumentSnapshot doc : allMoviesSnapshot.getDocuments()) {
+
+                                    DocumentReference ref = doc.getReference();
+                                    if (ref == null ||
+                                            ref.getParent() == null ||
+                                            ref.getParent().getParent() == null) {
+                                        continue;
+                                    }
+
+                                    String userId = ref.getParent().getParent().getId();
+
+                                    if (currentUserId.equals(userId)) continue;
+
+                                    String title = doc.getString("title");
+                                    String genre = doc.getString("genre");
+                                    Long rating = doc.getLong("rating");
+
+                                    if (title == null || rating == null) continue;
+                                    if (rating < 3) continue;
+                                    if (myLikedMovies.contains(title)) continue;
+                                    if (genre == null || !genre.equalsIgnoreCase(favouriteGenre)) continue;
+
+                                    scoreMap.put(title, scoreMap.getOrDefault(title, 0) + 1);
+                                }
+
+                                List<String> recommendations = new ArrayList<>(scoreMap.keySet());
+
+                                recommendations.sort((a, b) ->
+                                        scoreMap.get(b) - scoreMap.get(a)
+                                );
+
+                                if (recommendations.size() > 10) {
+                                    recommendations = recommendations.subList(0, 10);
+                                }
+
+                                Log.d(TAG, "Similar users also like (" + favouriteGenre + "): " + recommendations);
+
+                                callback.onResult(recommendations);
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Failed collectionGroup query", e);
+                                callback.onResult(new ArrayList<>());
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed loading my watched movies", e);
+                    callback.onResult(new ArrayList<>());
+                });
+    }
 
 
 }
