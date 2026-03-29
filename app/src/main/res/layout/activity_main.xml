@@ -163,15 +163,6 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginTop="18dp"/>
-
-                <TextView
-                    android:id="@+id/tvRecommended2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Users with similar intrests also like"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="18dp"/>
                 <!-- New Releases -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewRecommended"
@@ -181,6 +172,25 @@
                     android:clipToPadding="false"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
+                    android:scrollbars="none" />
+
+                <TextView
+                    android:id="@+id/tvRecommended2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Users with similar intrests also like"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="18dp"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewRecommended2"
+                    android:layout_width="377dp"
+                    android:layout_height="230dp"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:visibility="gone"
                     android:scrollbars="none" />
 
                 <TextView

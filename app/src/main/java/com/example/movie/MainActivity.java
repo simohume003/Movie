@@ -37,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
     private SearchView searchView;
     private View homeContentContainer;
     private boolean isSearching = false;
+    private RecyclerView recyclerViewRecommended2;
+    private TextView tvRecommended2;
 
+    private final List<Movie> recommendedMovies2 = new ArrayList<>();
+    private MovieAdapter recommendedAdapter2;
 
 
     private MovieAdapter recommendedAdapter;
@@ -79,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
         filterDisney = prefs.getBoolean(KEY_DISNEY, false);
 
         homeContentContainer = findViewById(R.id.homeContentContainer);
-
+        recyclerViewRecommended2 = findViewById(R.id.recyclerViewRecommended2);
+        tvRecommended2 = findViewById(R.id.tvRecommended2);
 
 
         recyclerViewNowPlaying = findViewById(R.id.recyclerViewNowPlaying);
@@ -136,6 +141,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewPersonal1.setAdapter(personalAdapter1);
         recyclerViewPersonal2.setAdapter(personalAdapter2);
 
+        recyclerViewRecommended2.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );recyclerViewRecommended2.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
 
         recyclerViewNowPlaying.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -179,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
         actorAdapter = new MovieAdapter(actorMovies, true);
         recyclerViewActorBar.setAdapter(actorAdapter);
 
+        recommendedAdapter2 = new MovieAdapter(recommendedMovies2, true);
+        recyclerViewRecommended2.setAdapter(recommendedAdapter2);
+
         // Data
         fetchNowPlayingMovies();
         fetchUpcomingMovies();
@@ -188,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation(bottomNavigationView);
         loadDirectorBar();
         loadActorBar();
+        loadSimilarUserRecommendations();
     }
 
 
@@ -692,6 +706,52 @@ public class MainActivity extends AppCompatActivity {
 
 
             return false;
+        });
+    }
+    private void loadSimilarUserRecommendations() {
+
+        RecommendationEngine engine = new RecommendationEngine();
+
+        engine.getSimilarUserRecommendations(movieTitles -> {
+
+            Log.d("SIMILAR_RECO", "Titles from engine: " + movieTitles);
+
+            if (movieTitles == null || movieTitles.isEmpty()) {
+                recyclerViewRecommended2.setVisibility(View.GONE);
+                tvRecommended2.setVisibility(View.GONE);
+                return;
+            }
+
+            tvRecommended2.setText("Users like you also like");
+            tvRecommended2.setVisibility(View.VISIBLE);
+            recyclerViewRecommended2.setVisibility(View.VISIBLE);
+
+            recommendedMovies2.clear();
+            recommendedAdapter2.notifyDataSetChanged();
+
+            for (String title : movieTitles) {
+                RetrofitClient.getInstance()
+                        .searchMovies(API_KEY, title, "en-US", 1)
+                        .enqueue(new Callback<MovieResponse>() {
+                            @Override
+                            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                                if (response.isSuccessful()
+                                        && response.body() != null
+                                        && !response.body().getResults().isEmpty()) {
+
+                                    recommendedMovies2.add(response.body().getResults().get(0));
+                                    recommendedAdapter2.notifyItemInserted(
+                                            recommendedMovies2.size() - 1
+                                    );
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                                Log.e("SIMILAR_RECO", "TMDB lookup failed for " + title, t);
+                            }
+                        });
+            }
         });
     }
 }
