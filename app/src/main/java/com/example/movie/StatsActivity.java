@@ -125,7 +125,9 @@ public class StatsActivity extends AppCompatActivity {
                             .map(Map.Entry::getKey)
                             .orElse("N/A");
 
-
+                    //I want to add in here a new pannel that tells users how many days sine using a service
+                    // we will replicate code below and get lowest service count,flick trough timestamp data and find last time used
+                    //we will show users days since and serive
 
                     String topService = serviceCount.entrySet().stream()
                             .max(Map.Entry.comparingByValue())
