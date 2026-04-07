@@ -26,7 +26,7 @@ public class StatsActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private LinearLayout statsContainer;
     private Map<String,Integer> serviceCount= new HashMap<>();
-
+    private Map<String, Long> serviceLastUsed = new HashMap<>();
     Map<String, Integer> directorCount = new HashMap<>();
 
 
@@ -90,12 +90,14 @@ public class StatsActivity extends AppCompatActivity {
                     int totalMinutes = 0;
                     Map<String, Integer> genreCount = new HashMap<>();
                     serviceCount.clear();
+                    serviceLastUsed.clear();
 
                     for (QueryDocumentSnapshot doc : snap) {
                         Long runtime = doc.getLong("runtime");
                         String genre = doc.getString("genre");
                         String service = doc.getString("service");
                         String director = doc.getString("director");
+                        Long timestamp = doc.getLong("timestamp");
 
 
                         if (runtime != null) totalMinutes += runtime;
@@ -103,7 +105,13 @@ public class StatsActivity extends AppCompatActivity {
                             genreCount.put(genre, genreCount.getOrDefault(genre, 0) + 1);
                         if (service != null)
                             serviceCount.put(service, serviceCount.getOrDefault(service, 0) + 1);
+                        if (service != null && timestamp != null) {
+                            Long currentLatest = serviceLastUsed.get(service);
 
+                            if (currentLatest == null || timestamp > currentLatest) {
+                                serviceLastUsed.put(service, timestamp);
+                            }
+                        }
                         if (director != null && !director.isEmpty()) {
                             directorCount.put(director,
                                     directorCount.getOrDefault(director, 0) + 1);
@@ -125,14 +133,26 @@ public class StatsActivity extends AppCompatActivity {
                             .map(Map.Entry::getKey)
                             .orElse("N/A");
 
-                    //I want to add in here a new pannel that tells users how many days sine using a service
-                    // we will replicate code below and get lowest service count,flick trough timestamp data and find last time used
-                    //we will show users days since and serive
-
                     String topService = serviceCount.entrySet().stream()
                             .max(Map.Entry.comparingByValue())
                             .map(Map.Entry::getKey)
                             .orElse("N/A");
+
+                    String underusedService = "N/A";
+                    long maxDaysUnused = -1;
+                    long now = System.currentTimeMillis();
+                    for (Map.Entry<String, Long> entry : serviceLastUsed.entrySet()) {
+                        long lastUsed = entry.getValue();
+                        long daysUnused = (now - lastUsed) / (1000L * 60 * 60 * 24);
+                        if (daysUnused > maxDaysUnused) {
+                            maxDaysUnused = daysUnused;
+                            underusedService = entry.getKey();
+                        }
+                    }
+                    String serviceInsight = "Error";
+                    if (!underusedService.equals("N/A")) {
+                        serviceInsight = underusedService + " unused for " + maxDaysUnused + " days";
+                    }
 
                     addExpandableStatPanel("🎬 Total Movies", totalMovies + " watched");
                     addExpandableStatPanel("⏱ Total Hours", (totalMinutes / 60) + " hrs");
@@ -143,12 +163,10 @@ public class StatsActivity extends AppCompatActivity {
                     LinearLayout servicePanel =
                             addExpandableStatPanel("🍿 Top Streaming Service", topService);
                     populateTextBreakdown(servicePanel, serviceCount);
-
+                    addExpandableStatPanel("📉 Underused Service", serviceInsight);
                     LinearLayout directorPanel =
                             addExpandableStatPanel("🎥 Most Watched Director", topDirector);
                     populateTextBreakdown(directorPanel, directorCount);
-
-
                 });
     }
 
