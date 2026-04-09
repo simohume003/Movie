@@ -61,6 +61,10 @@ public class MusicToMovieActivity extends AppCompatActivity {
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
             }
+        else if (id == R.id.moviem) {
+            startActivity(new Intent(this, MovieMarathonActivity.class));
+            return true;
+        }
             return false;
         });
 

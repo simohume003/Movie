@@ -28,6 +28,7 @@
         <activity android:name=".StatsActivity" android:exported="true"/>
         <activity android:name=".MovieDetailActivity" android:exported="true"/>
         <activity android:name=".MusicToMovieActivity" android:exported="true" />
+        <activity android:name=".MovieMarathonActivity" android:exported="true" />
 
     </application>
 

@@ -12,6 +12,11 @@
         android:icon="@drawable/log" />
 
     <item
+        android:id="@+id/moviem"
+        android:title="Movie Marathon"
+        android:icon="@drawable/moviem" />
+
+    <item
         android:id="@+id/nav_stats"
         android:title="Profile"
         android:icon="@drawable/account" />

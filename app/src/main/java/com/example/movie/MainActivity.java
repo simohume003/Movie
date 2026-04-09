@@ -698,6 +698,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_stats) {
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
+            } else if (id == R.id.moviem) {
+                startActivity(new Intent(this, MovieMarathonActivity.class));
+                return true;
             }
             else if (id == R.id.nav_music) {
                 startActivity(new Intent(this, MusicToMovieActivity.class));
