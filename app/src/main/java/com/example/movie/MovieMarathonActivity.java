@@ -16,6 +16,13 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.content.Intent;
+import android.net.Uri;
+import java.io.File;
+import java.io.FileWriter;
+import androidx.core.content.FileProvider;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MovieMarathonActivity extends AppCompatActivity {
 
@@ -23,10 +30,13 @@ public class MovieMarathonActivity extends AppCompatActivity {
 
     private EditText editDirectorName;
     private Button btnSearchDirector;
+    private Button btnDownloadCsv;
     private RecyclerView recyclerViewMarathonMovies;
 
     private final List<Movie> marathonMovies = new ArrayList<>();
     private MovieAdapter marathonAdapter;
+    private final Map<Integer, String> movieYears = new HashMap<>();
+    private String currentDirectorName = "movie_marathon";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +45,26 @@ public class MovieMarathonActivity extends AppCompatActivity {
 
         editDirectorName = findViewById(R.id.editDirectorName);
         btnSearchDirector = findViewById(R.id.btnSearchDirector);
+        btnDownloadCsv = findViewById(R.id.btnDownloadCsv);
         recyclerViewMarathonMovies = findViewById(R.id.recyclerViewMarathonMovies);
 
         recyclerViewMarathonMovies.setLayoutManager(new GridLayoutManager(this, 2));
         marathonAdapter = new MovieAdapter(marathonMovies, false);
         recyclerViewMarathonMovies.setAdapter(marathonAdapter);
 
+        btnDownloadCsv.setOnClickListener(v -> {
+            if (marathonMovies.isEmpty()) {
+                return;
+            }
+            exportMoviesToCsv();
+        });
         btnSearchDirector.setOnClickListener(v -> {
             String directorName = editDirectorName.getText().toString().trim();
 
             if (!directorName.isEmpty()) {
+                currentDirectorName = directorName;
                 marathonMovies.clear();
+                movieYears.clear();
                 marathonAdapter.notifyDataSetChanged();
                 fetchMoviesByDirector(directorName);
             }
@@ -106,6 +125,12 @@ public class MovieMarathonActivity extends AppCompatActivity {
                                 movie.setPosterPath(crew.getPosterPath());
 
                                 marathonMovies.add(movie);
+                                String releaseDate = crew.getReleaseDate();
+                                String year = "N/A";
+                                if (releaseDate != null && releaseDate.length() >= 4) {
+                                    year = releaseDate.substring(0, 4);
+                                }
+                                movieYears.put(movie.getId(), year);
                             }
                         }
 
