@@ -43,7 +43,7 @@ public class PersonApiResponse {
 
             @SerializedName("poster_path")
             private String posterPath;
-
+            private String release_date;
             private int id;
 
             public int getId() {
@@ -67,6 +67,7 @@ public class PersonApiResponse {
             public String getPosterPath() {
                 return posterPath;
             }
+            public String getReleaseDate() {return release_date;}
         }
 
         public static class Cast {
