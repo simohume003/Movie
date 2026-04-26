@@ -307,7 +307,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         // STEP 1 — pick streaming service
-        String[] services = {"Netflix", "Prime Video", "Disney+", "Apple TV", "Other"};
+        String[] services = {"Netflix", "Prime Video", "Disney+","Other"};
 
         new AlertDialog.Builder(this)
                 .setTitle("Where did you watch it?")
