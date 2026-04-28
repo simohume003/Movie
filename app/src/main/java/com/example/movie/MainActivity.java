@@ -23,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String API_KEY = "929a54210220df3134196d46a16375b1";
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewPersonal2;
 
     private SearchView searchView;
+    private TextView noSearchResultsText;
     private View homeContentContainer;
     private boolean isSearching = false;
     private RecyclerView recyclerViewRecommended2;
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewRecommended = findViewById(R.id.recyclerViewRecommended);
         recyclerViewSearchResults = findViewById(R.id.recyclerViewSearchResults);
         searchView = findViewById(R.id.searchView);
+        noSearchResultsText = findViewById(R.id.noSearchResultsText);
         tvPersonal1=findViewById(R.id.tvPersonal1);
         tvPersonal2=findViewById(R.id.tvPersonal2);
 
@@ -426,6 +429,16 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         List<Movie> filtered = new ArrayList<>();
+                        noSearchResultsText.setVisibility(View.GONE);
+                        recyclerViewSearchResults.setVisibility(View.VISIBLE);
+
+                        recyclerViewSearchResults.postDelayed(() -> {
+                            if (filtered.isEmpty() && (filterNetflix || filterPrime || filterDisney)) {
+                                recyclerViewSearchResults.setVisibility(View.GONE);
+                                noSearchResultsText.setText("No movies found on selected service");
+                                noSearchResultsText.setVisibility(View.VISIBLE);
+                            }
+                        }, 100);
 
                         for (Movie movie : results) {
                             checkProviders(movie, filtered);
@@ -459,12 +472,14 @@ public class MainActivity extends AppCompatActivity {
 
                         for (WatchProviderResponse.Provider p : providers) {
                             if ((filterNetflix && p.getProviderName().equals("Netflix")) ||
-                                    (filterPrime && p.getProviderName().toLowerCase().contains("amazon")) ||
-                                    (filterDisney && p.getProviderName().toLowerCase().contains("Disney"))) {
+                                    (filterPrime && p.getProviderName().toLowerCase().contains("amazon prime video")) ||
+                                    (filterDisney && p.getProviderName().toLowerCase().contains("disney"))) {
 
                                 filtered.add(movie);
 
                                 runOnUiThread(() -> {
+                                    noSearchResultsText.setVisibility(View.GONE);
+                                    recyclerViewSearchResults.setVisibility(View.VISIBLE);
                                     recyclerViewSearchResults.setAdapter(
                                             new MovieAdapter(filtered, false)
                                     );

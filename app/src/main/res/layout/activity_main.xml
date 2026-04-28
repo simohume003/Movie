@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
             android:textColor="#222222"
-            app:queryHint="Search here…"/>
+            app:queryHint="Search Movies here…"/>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -102,7 +102,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upcoming Movies"
+                    android:text="Movies in Cinemas"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp"/>
@@ -134,7 +134,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewPersonal1"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="230dp"
                     android:visibility="gone" />
 
                 <!-- PERSONAL BAR 2 -->
@@ -152,7 +152,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewPersonal2"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="230dp"
                     android:visibility="gone" />
                 <!-- Recommended -->
                 <TextView
@@ -166,7 +166,7 @@
                 <!-- New Releases -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewRecommended"
-                    android:layout_width="377dp"
+                    android:layout_width="match_parent"
                     android:layout_height="230dp"
                     android:layout_marginTop="8dp"
                     android:clipToPadding="false"
@@ -184,7 +184,7 @@
                     android:layout_marginTop="18dp"/>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewRecommended2"
-                    android:layout_width="377dp"
+                    android:layout_width="match_parent"
                     android:layout_height="230dp"
                     android:layout_marginTop="8dp"
                     android:clipToPadding="false"
@@ -225,7 +225,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewDirectorBar"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="230dp"
                     android:visibility="gone"/>
 
                 <TextView
@@ -242,7 +242,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewActorBar"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="230dp"
                     android:visibility="gone"/>
 
             </LinearLayout>
@@ -256,6 +256,18 @@
             android:visibility="gone"
             android:layout_marginTop="25dp"
             android:scrollbars="vertical" />
+
+        <TextView
+            android:id="@+id/noSearchResultsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No movies found on selected service"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="24dp"
+            android:padding="16dp" />
 
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
