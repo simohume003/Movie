@@ -31,6 +31,7 @@ public class MusicToMovieActivity extends AppCompatActivity {
     private RecyclerView songResultsRecycler;
 
     private SpotifyTrackAdapter adapter;
+    private View waitingOverlay;
     private LinearLayout movieResultCard;
     private TextView movieTitleText;
     private TextView movieReasonText;
@@ -74,19 +75,22 @@ public class MusicToMovieActivity extends AppCompatActivity {
         moviePoster = findViewById(R.id.moviePoster);
         songSearchInput = findViewById(R.id.songSearchInput);
         songResultsRecycler = findViewById(R.id.songResultsRecycler);
-
+        waitingOverlay = findViewById(R.id.waitingOverlay);
         songResultsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new SpotifyTrackAdapter(tracks, track -> {
 
             String song = track.getName() + " - " + track.getArtistName();
+            waitingOverlay.setVisibility(View.VISIBLE);
+            songResultsRecycler.setVisibility(View.GONE);
+            movieResultCard.setVisibility(View.GONE);
 
             GeminiService.getMovieFromSong(song, new GeminiService.GeminiCallback() {
                 @Override
                 public void onSuccess(String result) {
                     runOnUiThread(() -> {
 
-
+                        waitingOverlay.setVisibility(View.GONE);
                         songResultsRecycler.setVisibility(View.GONE);
 
 
