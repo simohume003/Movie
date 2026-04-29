@@ -6,6 +6,44 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#FFFFFF">
+    <LinearLayout
+        android:id="@+id/statsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/backround_gradient">
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CineScope"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/profileGreeting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hey Simon 👋"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/profileSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Here’s your movie journey so far"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
 
     <!-- SCROLLABLE CONTENT -->
     <ScrollView
@@ -19,37 +57,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp">
-
-            <TextView
-                android:id="@+id/profileGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hey Simon 👋"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#222222"
-                android:layout_marginBottom="6dp"/>
-
-            <TextView
-                android:id="@+id/profileSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Here’s your movie journey so far"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="20dp"/>
-
-
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Log Out"
-                android:layout_marginTop="32dp"
-                android:backgroundTint="#D32F2F"
-                android:textColor="#FFFFFF"/>
-
-
 
             <TextView
                 android:id="@+id/summaryText"
@@ -74,8 +81,18 @@
                 android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:textColor="#333333" />
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Log Out"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="#D32F2F"
+                android:textColor="#FFFFFF"/>
+
 
         </LinearLayout>
+
     </ScrollView>
 
     <!-- BOTTOM NAV -->
