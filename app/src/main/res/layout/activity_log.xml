@@ -7,19 +7,33 @@
     android:background="#FFFFFF">
 
 
-    <TextView
-        android:id="@+id/tvTitle"
+
+    <LinearLayout
+        android:id="@+id/logHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Watched Movies"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#111111"
-        android:gravity="center"
-        android:paddingTop="20dp"
-        android:paddingBottom="12dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
+        android:layout_height="120dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/backround_gradient">
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CineScope"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/appSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your logged movies"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
