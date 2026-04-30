@@ -15,6 +15,10 @@ public class WatchProviderResponse {
         private List<Provider> flatrate;
 
         public List<Provider> getFlatrate() { return flatrate; }
+        private List<Provider> rent;
+        public List<Provider> getRent() {
+            return rent;
+        }
     }
 
     public static class Provider {

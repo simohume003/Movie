@@ -108,7 +108,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (movieId > 0 && movieTitle != null) {
             fetchMovieDetails(movieId);
             fetchWatchProviders(movieId);
-            fetchEbayPrice(movieTitle);
+
 
 
             btnMarkWatched.setOnClickListener(v ->
@@ -204,18 +204,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-    //ebay
-    private void fetchEbayPrice(String movieTitle) {
-        runOnUiThread(() -> {
-            ebayContainer.setVisibility(View.VISIBLE);
-            ebayContainer.setOnClickListener(v -> {
-                String url = "https://www.ebay.com/sch/i.html?_nkw="
-                        + Uri.encode(movieTitle + " DVD")+"&_sop=15";
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            });
-        });
-    }
-
     private void fetchWatchProviders(int movieId) {
         RetrofitClient.getInstance()
                 .getWatchProviders(movieId, TMDB_API_KEY)
@@ -228,6 +216,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                         WatchProviderResponse.CountryProviders providers =
                                 response.body().getResults().get("IE");
+                        List<WatchProviderResponse.Provider> rentalProviders =
+                                providers != null ? providers.getRent() : null;
                         boolean netflixIE = false;
                         boolean netflixUS = false;
 
@@ -289,9 +279,46 @@ public class MovieDetailActivity extends AppCompatActivity {
                             usNetflixLogo.setImageResource(R.drawable.nam);
 
                             streamingLogoContainer.addView(usNetflixLogo);
+                        }
+                            if (rentalProviders != null && !rentalProviders.isEmpty()) {
+
+                                ebayContainer.removeAllViews();
+                                ebayContainer.setVisibility(View.VISIBLE);
+
+                                TextView rentLabel = new TextView(MovieDetailActivity.this);
+                                rentLabel.setText("Available to rent on:");
+                                rentLabel.setTextSize(16);
+                                rentLabel.setTextColor(getResources().getColor(android.R.color.black));
+                                rentLabel.setPadding(0, 8, 0, 8);
+
+                                ebayContainer.addView(rentLabel);
+
+                                for (WatchProviderResponse.Provider provider : rentalProviders) {
+                                    ImageView logo = new ImageView(MovieDetailActivity.this);
+
+                                    LinearLayout.LayoutParams rentalparams =
+                                            new LinearLayout.LayoutParams(120, 120);
+                                    rentalparams.setMarginEnd(24);
+
+                                    logo.setLayoutParams(rentalparams);
+                                    logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                                    String logoUrl =
+                                            "https://image.tmdb.org/t/p/w500" + provider.getLogoPath();
+
+                                    Glide.with(MovieDetailActivity.this)
+                                            .load(logoUrl)
+                                            .into(logo);
+
+                                    ebayContainer.addView(logo);
+                                }
+
+                            } else {
+                                ebayContainer.setVisibility(View.GONE);
+                            }
 
                         }
-                    }
+
 
                     @Override
                     public void onFailure(Call<WatchProviderResponse> call, Throwable t) {
