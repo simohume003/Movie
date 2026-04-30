@@ -21,6 +21,9 @@ import android.net.Uri;
 import java.io.File;
 import java.io.FileWriter;
 import androidx.core.content.FileProvider;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +45,28 @@ public class MovieMarathonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.marathon_activity);
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_log) {
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
+            } else if (id == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            else if (id == R.id.moviem) {
+                startActivity(new Intent(this, MovieMarathonActivity.class));
+                return true;
+            }
+            return false;
+        });
 
         editDirectorName = findViewById(R.id.editDirectorName);
         btnSearchDirector = findViewById(R.id.btnSearchDirector);
